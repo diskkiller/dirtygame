@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/ll_game_questions_answer"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@drawable/im_progress_dialog_bg"
+android:layout_marginTop="100dp"
+android:layout_marginLeft="250dp"
+android:layout_marginRight="250dp"
+android:layout_marginBottom="100dp"
+android:gravity="center_horizontal"
+    >
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@mipmap/title_bg"
+    android:textColor="#ffffff"
+    android:layout_centerHorizontal="true"
+    android:gravity="center"
+    android:textSize="40sp"
+    android:text="公布答案"
+    />
+
+<TextView
+    android:id="@+id/item_questions_answer"
+    android:layout_width="match_parent"
+    android:layout_marginTop="200dp"
+    android:layout_height="wrap_content"
+    android:textColor="#ffffff"
+    android:gravity="center"
+    android:textSize="35sp"
+    android:text="你怎么用那么小的东西呼吸！"
+    />
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="100dp"
+    >
+    <Button
+        android:id="@+id/bt_punishment"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:background="@mipmap/btn_nomal"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:text="必须惩罚"
+        android:layout_marginLeft="100dp"
+        />
+
+
+    <Button
+        android:id="@+id/bt_rewards"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@mipmap/btn_green"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:text="勉强通过"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="100dp"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        />
+
+</RelativeLayout>
+
+
+
+</RelativeLayout>

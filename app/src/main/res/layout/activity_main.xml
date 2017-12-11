@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/iv_home"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@mipmap/home"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="50dp"
+        />
+
+    <FrameLayout
+        android:id="@+id/detail_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+    <include layout="@layout/ll_game_des" android:visibility="gone"/>
+    <include layout="@layout/ll_game_des1" android:visibility="gone"/>
+    <include layout="@layout/ll_game_questions" android:visibility="gone"/>
+    <include layout="@layout/ll_game_questions_answer" android:visibility="gone"/>
+    <include layout="@layout/ll_punishment_rewards" android:visibility="gone"/>
+    <include layout="@layout/ll_game_end" android:visibility="gone"/>
+    <include layout="@layout/rl_home" android:visibility="gone"/>
+    <include layout="@layout/rl_welcome" android:visibility="visible"/>
+    <include layout="@layout/ll_game_help" android:visibility="gone"/>
+
+
+
+</RelativeLayout>

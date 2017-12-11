@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/rl_home"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="horizontal"
+android:gravity="center"
+    >
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="80dp"
+    android:gravity="center"
+    >
+
+    <ImageView
+        android:id="@+id/iv_baiyi"
+        android:layout_width="400dp"
+        android:layout_height="550dp"
+        android:background="@mipmap/baiyi"
+        android:layout_centerHorizontal="true"
+        >
+
+    </ImageView>
+    <TextView
+        android:id="@+id/tx_baiwan"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@mipmap/btn_nomal"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:text="百万富豪"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>
+
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="80dp"
+    android:gravity="center"
+    >
+
+    <ImageView
+        android:id="@+id/iv_yiwan"
+        android:layout_width="400dp"
+        android:layout_height="550dp"
+        android:background="@mipmap/yiwan"
+        android:layout_centerHorizontal="true"
+        >
+
+    </ImageView>
+    <TextView
+        android:id="@+id/tx_qianwan"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@mipmap/btn_nomal"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:text="千万富豪"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>
+
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="80dp"
+    android:gravity="center"
+    >
+
+    <ImageView
+        android:id="@+id/iv_qianyi"
+        android:layout_width="400dp"
+        android:layout_height="550dp"
+        android:background="@mipmap/qianyi"
+        android:layout_centerHorizontal="true"
+        >
+
+    </ImageView>
+    <TextView
+        android:id="@+id/tx_yiwan"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@mipmap/btn_nomal"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:text="亿万富豪"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>
+</LinearLayout>

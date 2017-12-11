@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/rl_welcome"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@mipmap/welcpme"
+android:layout_margin="100dp"
+    >
+
+<Button
+    android:id="@+id/bt_begin"
+    android:layout_width="210dp"
+    android:layout_height="70dp"
+    android:background="@mipmap/btn_long_texte"
+    android:textColor="#ffffff"
+    android:textSize="20sp"
+    android:padding="10dp"
+    android:text="那还等什么！！！"
+    android:layout_marginRight="100dp"
+    android:shadowColor="@color/ff1f1f1f"
+    android:shadowDx="2"
+    android:shadowDy="2"
+    android:shadowRadius="2"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="150dp"
+    />
+</RelativeLayout>

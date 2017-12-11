@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/ll_game_end"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@mipmap/plmm_agin"
+android:layout_marginTop="200dp"
+android:layout_marginLeft="350dp"
+android:layout_marginRight="350dp"
+android:layout_marginBottom="200dp"
+android:gravity="center_horizontal"
+    >
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="100dp"
+    >
+    <Button
+        android:id="@+id/bt_more"
+        android:layout_width="210dp"
+        android:layout_height="70dp"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:background="@mipmap/btn_long_texte"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:text="再来十万！！！"
+        android:layout_centerHorizontal="true"
+        />
+
+
+    <Button
+        android:id="@+id/bt_agin"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@mipmap/btn_green"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:text="再来十万"
+        android:shadowColor="@color/ff1f1f1f"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>
+
+
+
+</RelativeLayout>
