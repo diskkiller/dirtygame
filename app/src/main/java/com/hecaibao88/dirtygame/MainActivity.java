@@ -1,8 +1,19 @@
 package com.hecaibao88.dirtygame;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.SoundPool;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,10 +31,14 @@ import com.hecaibao88.dirtygame.audio.AndroidAudio;
 import com.hecaibao88.dirtygame.audio.Music;
 import com.hecaibao88.dirtygame.audio.Sound;
 import com.hecaibao88.dirtygame.bean.DataBean;
+import com.hecaibao88.dirtygame.bean.DataBeanDao;
+import com.hecaibao88.dirtygame.bean.GreenDaoManager;
 import com.hecaibao88.dirtygame.bean.QuestionsData;
 import com.hecaibao88.dirtygame.bean.QuestionsGroup;
 import com.hecaibao88.dirtygame.bean.QuestionsType;
 import com.hecaibao88.dirtygame.bean.UserInfo;
+import com.hecaibao88.dirtygame.bean.cfData;
+import com.hecaibao88.dirtygame.dialog.ImProgressDialog;
 import com.hecaibao88.dirtygame.http.QHttpClient;
 import com.hecaibao88.dirtygame.http.QResponse;
 import com.hecaibao88.dirtygame.http.QResult;
@@ -33,15 +48,15 @@ import com.hecaibao88.dirtygame.utils.DeviceUtil;
 import com.hecaibao88.dirtygame.utils.L;
 import com.hecaibao88.dirtygame.utils.SharedPreferencesUtils;
 import com.hecaibao88.dirtygame.utils.Utils;
+import com.hecaibao88.dirtygame.utils.dodo.FileUtil;
+import com.hecaibao88.dirtygame.utils.dodo.NetStatus;
 
 import net.lemonsoft.lemonbubble.LemonBubble;
 import net.lemonsoft.lemonbubble.LemonBubbleInfo;
 import net.lemonsoft.lemonbubble.LemonBubbleView;
 import net.lemonsoft.lemonbubble.interfaces.LemonBubbleLifeCycleDelegate;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +66,10 @@ import java.util.UUID;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.hecaibao88.dirtygame.R.id.tx_punishment1;
+import static com.hecaibao88.dirtygame.R.id.tx_punishment2;
+import static com.hecaibao88.dirtygame.R.id.tx_punishment3;
 
 // 主页面
 public class MainActivity extends FragmentActivity implements QHttpClient.RequestHandler,
@@ -80,7 +99,9 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     @Bind(R.id.iv_home)
     ImageView mHome;
     @Bind(R.id.tx_punishment_rewards_title)
-    TextView mTxPunishmentRewardsTitle;
+    ImageView mTxPunishmentRewardsTitle;
+    @Bind(R.id.im_shanhua)
+    ImageView mIvShanHua;
     @Bind(R.id.ll_punishment_rewards)
     RelativeLayout mLlPunishmentRewards;
     @Bind(R.id.bt_more)
@@ -89,8 +110,8 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     Button mBtAgin;
     @Bind(R.id.ll_game_end)
     RelativeLayout mLlGameEnd;
-    @Bind(R.id.bt_begin)
-    Button mBtBegin;
+//    @Bind(R.id.bt_begin)
+//    Button mBtBegin;
     @Bind(R.id.rl_welcome)
     RelativeLayout mRlWelcome;
     @Bind(R.id.bt_gogogo)
@@ -111,14 +132,20 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     TextView mItemQuestionsAnswer;
     @Bind(R.id.ll_game_questions_answer)
     RelativeLayout mLlGameQuestionsAnswer;
-    @Bind(R.id.tx_punishment1)
+    @Bind(tx_punishment1)
     TextView mTxPunishment1;
-    @Bind(R.id.tx_punishment2)
+    @Bind(tx_punishment2)
     TextView mTxPunishment2;
-    @Bind(R.id.tx_punishment3)
+    @Bind(tx_punishment3)
     TextView mTxPunishment3;
+    @Bind(R.id.rewards_intent_num)
+    TextView mRewardsNum;
+    @Bind(R.id.tv_setting)
+    TextView mSetting;
     @Bind(R.id.ll_punishment)
     RelativeLayout mLlPunishment;
+    @Bind(R.id.network_state)
+    RelativeLayout mNetworkState;
     @Bind(R.id.ll_rewards)
     LinearLayout mLlRewards;
     @Bind(R.id.bt_next)
@@ -129,6 +156,22 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     ImageView mIvBaiyi;
     @Bind(R.id.iv_qianyi)
     ImageView mIvQianyi;
+    @Bind(R.id.iv_caideng)
+    ImageView mIvCaiDeng;
+    @Bind(R.id.iv_caideng1)
+    ImageView mIvCaiDeng1;
+    @Bind(R.id.iv_caideng2)
+    ImageView mIvCaiDeng2;
+    @Bind(R.id.iv_caideng3)
+    ImageView mIvCaiDeng3;
+    @Bind(R.id.iv_caideng4)
+    ImageView mIvCaiDeng4;
+    @Bind(R.id.iv_caideng5)
+    ImageView mIvCaiDeng5;
+    @Bind(R.id.iv_caideng6)
+    ImageView mIvCaiDeng6;
+    @Bind(R.id.iv_caideng7)
+    ImageView mIvCaiDeng7;
     private QuestionsData questionsData;
     private int groupId, questionsId, typeId;
     private boolean isAnswer = false;
@@ -138,7 +181,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     private List<DataBean> questionsList;
     private UserHelper userHelper;
     private UserInfo userInfo;
-    private int intentNum;
+    private int intentNum,price;
     private String glodsCount;
     private int typeRMB;
     private boolean goPay = false;
@@ -147,6 +190,20 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     private Random random;
     private String out_trade_no;
     private boolean isDuiHuan;
+    private AnimationDrawable rocketAnimation,rocketAnimation1,rocketAnimation2
+            ,rocketAnimation3,rocketAnimation4,rocketAnimation5,rocketAnimation6,rocketAnimation7;
+    private int mPunishmentId;
+    private cfData questionsCFData;
+    private List<List<String>> cfList;
+    private FileUtil fileUtil;
+    private List gameDataList =  new ArrayList<GameData.DataBean>();
+    private GameAdapter1 adapter;
+    private RecyclerView recyclerView;
+    private boolean isLoad = false;
+    private ImProgressDialog loadingdialog;
+    private DataBeanDao dataBeanDao;
+    private boolean isOnCreat = true;
+    private boolean mRlWelcome_show = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,8 +219,22 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        IntentFilter mFilter = new IntentFilter();
+        mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(mReceiver, mFilter);
+
+        loadingdialog = new ImProgressDialog.Builder(this).create();
         userHelper = UserHelper.initialize(this, this);
         userHelper.getUserInfo(this);
+        fileUtil = new FileUtil();
+
+        dataBeanDao = GreenDaoManager.getInstance().getSession().getDataBeanDao();
+
+//        Glide.with(this).load(R.mipmap.caideng).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(mIvCaiDeng);
+//        Glide.with(this).load(R.mipmap.caideng).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(mIvCaiDeng1);
+
+        startRocketAnima(mIvCaiDeng);
+
 
 
         androidAudio = new AndroidAudio(this);
@@ -171,13 +242,64 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         mMusic.setLooping(true);
         mMusic.play();
 
-//        mSound2 = androidAudio.newSound("s2.mp3");
-//        mSound3 = androidAudio.newSound("s3.mp3");
-
         random = new Random();
         /*ListFragment fragment = new ListFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.detail_container, fragment).commit();*/
+
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        /**
+         * 创建一个linearlayoutmaneger对象，并将他设置到recyclerview当中。layoutmanager用于指定
+         * recyclerview的布局方式，这里是线性布局的意思。可以实现和listview类似的效果。
+         *
+         */
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        //        recyclerView.addItemDecoration(new SpaceItemDecoration(50));
+        adapter = new GameAdapter1(loadingdialog);
+        recyclerView.setAdapter(adapter);
+        adapter.SetOnItemClickListener(new GameAdapter1.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position, GameData.DataBean gameData) {
+
+                if(!NetStatus.getNetStatus(MainActivity.this)){
+                    Utils.showToastCenter(MainActivity.this,"网络断开,请检查网络哦");
+                    return;
+                }
+
+                if(!isPaying){
+
+
+                    if(reNetIsAvailable == 1)
+                        isAnswer = true;
+
+                    /**
+                     * 万亿-1988（刺激）-20张50元面值即开彩-每次刮2张；
+                     千亿-1188（激情）-30张20元面值即开彩-每次刮3张；
+                     百亿-666（调情）-60张5元面值即开彩-每次刮6张；*/
+
+                    typeRMB = gameData.getTypeRMB();
+                    typeId = gameData.getTypeId();
+                    if(mQuestionsDataTypeMap.get(typeId)!=null)
+                        groupId = random.nextInt(mQuestionsDataTypeMap.get(typeId).getgroupData().size()-1)+1;
+                    else{
+                        Utils.showToastCenter(MainActivity.this,"暂未开放");
+                        return;
+                    }
+                    intentNum = gameData.getIntentNum();
+                    price = gameData.getPrice();
+                    L.debug("nettask","groupId    "+groupId+"");
+                    L.debug("nettask","typeId    "+typeId+"");
+                    showPay();
+                }else{
+                    Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
+                }
+            }
+        });
+
 
 
         LemonBubbleView.defaultBubbleView().setLifeCycleDelegate(new LemonBubbleLifeCycleDelegate
@@ -205,30 +327,68 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 super.alreadyHide(bubbleView, bubbleInfo);
                 System.out.println("BUBBLE ALREADY HIDE!");
                 if(isDuiHuan){
-                    SharedPreferencesUtils.init(MainActivity.this).putBoolean("isPay",true);
-                    SharedPreferencesUtils.init(MainActivity.this).putBoolean("isAnswer",false);
-                    SharedPreferencesUtils.init(MainActivity.this).putInt("typeId",typeId);
-                    SharedPreferencesUtils.init(MainActivity.this).putInt("groupId",groupId);
+                    if(userInfo!=null&&userInfo.getId()!=null){
+                        SharedPreferencesUtils.init(MainActivity.this,userInfo.getId()).putBoolean("isPay",true)
+                                .putBoolean("isAnswer",false)
+                                .putInt("typeId",typeId)
+                                .putInt("groupId",groupId)
+                                .putInt("intentNum",intentNum);
+
+                    }
                     changeGame();//收到彩票页面
                 }
             }
         });
 
+        loadingdialog.show();
 
-        if(SharedPreferencesUtils.init(this).getInt("typeId")!=0){
-            typeId = SharedPreferencesUtils.init(this).getInt("typeId");
-        }
-        if(SharedPreferencesUtils.init(this).getInt("groupId")!=0){
-            groupId = SharedPreferencesUtils.init(this).getInt("groupId");
-            questionsId = SharedPreferencesUtils.init(this).getInt("questionsId");
-        }
-
-        if(typeId==0 && groupId==0){
-            changeHome();
-        }
-
-        loadOneData();
     }
+
+    private void initData() {
+        if(userInfo!=null&&userInfo.getId()!=null){
+
+            if(SharedPreferencesUtils.init(this,userInfo.getId()).getInt("typeId")!=0){
+                typeId = SharedPreferencesUtils.init(this,userInfo.getId()).getInt("typeId");
+            }
+            if(SharedPreferencesUtils.init(this,userInfo.getId()).getInt("groupId")!=0){
+                groupId = SharedPreferencesUtils.init(this,userInfo.getId()).getInt("groupId");
+                questionsId = SharedPreferencesUtils.init(this,userInfo.getId()).getInt("questionsId");
+            }
+            if(SharedPreferencesUtils.init(this,userInfo.getId()).getInt("intentNum")!=0){
+                intentNum = SharedPreferencesUtils.init(this,userInfo.getId()).getInt("intentNum");
+            }
+        }
+
+
+        if(typeId==0 && groupId==0 && questionsId == 0){
+            changeHome();
+            if(reNetIsAvailable == 1 && mLlGameHelp.getVisibility() == View.GONE){
+                if(gameDataList!=null)
+            }
+        }
+
+
+        /*if(dataBeanDao.queryBuilder().list()!=null&&dataBeanDao.queryBuilder().list().size()>0)
+            preseData2View(dataBeanDao.queryBuilder().list());
+        else*/
+        loadOneData();
+        loadCFData();
+
+
+        loadGameData();
+    }
+
+    private void startRocketAnima(View view) {
+
+        rocketAnimation = (AnimationDrawable) getResources().getDrawable(R.drawable.wel_anim);
+        //获得bg的drawable对象，强制转换为AnimationDrawable
+        view.setBackgroundDrawable(rocketAnimation);
+        //播放动画
+        rocketAnimation.stop();
+        rocketAnimation.start();
+    }
+
+
 
 
     void playSound1(){
@@ -270,88 +430,123 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     }
 
     @OnClick({R.id.iv_yiwan, R.id.iv_baiyi, R.id.iv_qianyi, R.id.bt_punishment, R.id
-            .bt_rewards, R.id.bt_star, R.id.iv_home, R.id.bt_more, R.id.bt_agin, R.id.bt_begin, R
-            .id.bt_gogogo, R.id.bt_star1, R.id.bt_look_answer, R.id.bt_next})
+            .bt_rewards, R.id.bt_star, R.id.iv_home, R.id.bt_more,R.id.ll_game_end, R.id.bt_agin, R.id.rl_welcome, R
+            .id.bt_gogogo, R.id.bt_star1, R.id.bt_look_answer, R.id.bt_next,R.id.ll_game_des,R.id.ll_game_des1,R.id.tv_setting})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.iv_baiyi:
+            /*case R.id.iv_baiyi:
                 if(!isPaying){
-                    typeRMB = 888;
+                    typeRMB = 666;//送60张5元
                     typeId = 2;
                     groupId = random.nextInt(2)+1;
-                    intentNum = 15;
+                    intentNum = 60;
+                    price = 5;
                     L.debug("nettask",groupId+"");
                     showPay();
                 }else{
                     Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
                 }
-                //                changeGame();
+                *//*typeId = 2;
+                groupId = random.nextInt(2)+1;
+                intentNum = 30;
+                changeGame();*//*
                 break;
             case R.id.iv_qianyi:
                 if(!isPaying) {
-                    typeRMB = 1088;
+                    typeRMB = 1188;//送30张20元
                     typeId = 3;
                     groupId = random.nextInt(2)+1;
-                    intentNum = 20;
+                    intentNum = 30;
+                    price = 20;
                     L.debug("nettask",groupId+"");
                     showPay();
                 }else{
                     Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
                 }
-                //                changeGame();
+                *//*typeId = 3;
+                groupId = random.nextInt(2)+1;
+                intentNum = 20;
+                changeGame();*//*
                 break;
             case R.id.iv_yiwan:
                 if(!isPaying) {
-                    typeRMB = 688;
+                    typeRMB = 1988;//送60张5元
                     typeId = 1;
+                    intentNum = 20;
+                    price = 50;
                     groupId = random.nextInt(2)+1;
-                    intentNum = 10;
                     L.debug("nettask",groupId+"");
                     showPay();
                 }else{
                     Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
                 }
-                //                changeGame();
-                break;
+                *//*typeId = 1;
+                groupId = random.nextInt(2)+1;
+                intentNum = 60;
+                changeGame();*//*
+                break;*/
             case R.id.bt_punishment:
                 playSound1();
                 questionsId++;
                 changePunishmentRewards(0);
-                mTxPunishmentRewardsTitle.setText("你懂的~");
+                mIvShanHua.setVisibility(View.GONE);
+                mTxPunishmentRewardsTitle.setImageResource(R.mipmap.nidongde);
                 break;
             case R.id.bt_rewards:
                 playSound3();
                 questionsId++;
                 changePunishmentRewards(1);
-                mTxPunishmentRewardsTitle.setText("运气真棒！");
+                mIvShanHua.setVisibility(View.VISIBLE);
+                mRewardsNum.setText("恭喜你！答对了，喝杯酒庆祝一下，请刮"+(intentNum/10)+"张即开彩");
+                mTxPunishmentRewardsTitle.setImageResource(R.mipmap.zhenbang);
                 break;
-            case R.id.bt_star://点击已收到
+            case R.id.ll_game_des://R.id.bt_star://点击已收到
+                startRocketAnima(mIvCaiDeng5);
                 playSound2();
+                mLlGameDes.setVisibility(View.GONE);
                 mLlGameDes1.setVisibility(View.VISIBLE);//等不及了页面
                 break;
             case R.id.iv_home:
+                if(mLlGameHelp.getVisibility() == View.VISIBLE)
+                    return;
+
                 playSound2();
+                startRocketAnima(mIvCaiDeng1);
                 mLlGameHelp.setVisibility(View.VISIBLE);
                 break;
-            case R.id.bt_more:
+            case R.id.ll_game_end://R.id.bt_more:
+//                rocketAnimation7.stop();
+                isDuiHuan = false;
                 playSound2();
                 changeHome();
+                if(gameDataList!=null)
+                    adapter.setGameAdapterData(gameDataList);
                 break;
             case R.id.bt_agin:
                 playSound2();
                 changeQuestions();
                 break;
-            case R.id.bt_begin://欢迎页点击
+            case R.id.rl_welcome://欢迎页点击
+//                rocketAnimation.stop();
+//                rocketAnimation1.start();
+                startRocketAnima(mIvCaiDeng1);
                 playSound2();
                 mRlWelcome.setVisibility(View.GONE);//欢迎页
                 mLlGameHelp.setVisibility(View.VISIBLE);//二维码页面
                 break;
             case R.id.bt_gogogo://二维码页面点击
+//                rocketAnimation1.stop();
                 playSound2();
                 mLlGameHelp.setVisibility(View.GONE);//二维码页面消失进入选择页面
                 isAnswer = true;
+                if(!isLoad){
+//                    loadingdialog.show();
+                    adapter.setGameAdapterData(gameDataList);
+                    isLoad = true;
+                }
                 break;
-            case R.id.bt_star1:
+            case R.id.ll_game_des1://R.id.bt_star1:
+//                rocketAnimation5.stop();
                 playSound2();
                 mLlGameDes1.setVisibility(View.GONE);//等不及页面消失
                 changeQuestions();//答题页面
@@ -364,28 +559,67 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 playSound2();
                 changeQuestions();//回到答题页面
                 break;
+            case R.id.tv_setting:
+                if (Build.VERSION.SDK_INT > 10) {
+                    // 3.0以上打开设置界面，也可以直接用ACTION_WIRELESS_SETTINGS打开到wifi界面
+                    startActivity(new Intent(
+                            Settings.ACTION_WIFI_SETTINGS));
+                    overridePendingTransition(R.anim.left_in,
+                            R.anim.left_out);
+                } else {
+                    startActivity(new Intent(
+                            android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                    overridePendingTransition(R.anim.left_in,
+                            R.anim.left_out);
+                }
+                break;
         }
     }
+
+
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo info;
+    private int reNetIsAvailable = 0;
+    /**
+     * 监听网络变化广播 做出相应的提示
+     */
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                connectivityManager = (ConnectivityManager) getApplication()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+                info = connectivityManager.getActiveNetworkInfo();
+                if (info != null && info.isAvailable()) {
+                    initData();
+                    mNetworkState.setVisibility(View.GONE);
+                } else {
+                    reNetIsAvailable = 1;
+                    changeNetworkState();
+                }
+            }
+        }
+    };
+
+
 
     private void showPay() {
         if (isAnswer) {
 
             isPaying = true;
-            intent_query();
-//            intent_order();
+//            intent_query();
+            LemonBubble.showRoundProgress(MainActivity.this, "正在支付...");
+            //先去支付
+            intent_order();
 
-            /*LemonBubble.showRoundProgress(MainActivity.this, "请求中...");
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
-                }
-            }, 2000);*/
         }
     }
 
 
     public void changeGame() {
+        startRocketAnima(mIvCaiDeng4);
         mRlHome.setVisibility(View.GONE);
         mDetailContainer.setVisibility(View.GONE);
         mLlGameDes.setVisibility(View.VISIBLE);
@@ -405,8 +639,20 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     }
 
     public void changeHome() {
-        questionsId = 0;
+        if(reNetIsAvailable == 0)
+            questionsId = 0;
         mRlHome.setVisibility(View.VISIBLE);
+        mDetailContainer.setVisibility(View.GONE);
+        mLlGameDes.setVisibility(View.GONE);
+        mLlGameQuestions.setVisibility(View.GONE);
+        mLlPunishmentRewards.setVisibility(View.GONE);
+        mLlGameEnd.setVisibility(View.GONE);
+        mLlGameQuestionsAnswer.setVisibility(View.GONE);
+    }
+    public void changeNetworkState() {
+        mNetworkState.setVisibility(View.VISIBLE);
+        mRlWelcome.setVisibility(View.GONE);
+        mRlHome.setVisibility(View.GONE);
         mDetailContainer.setVisibility(View.GONE);
         mLlGameDes.setVisibility(View.GONE);
         mLlGameQuestions.setVisibility(View.GONE);
@@ -416,6 +662,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     }
 
     public void changeQuestions() {
+        startRocketAnima(mIvCaiDeng2);
         mRlHome.setVisibility(View.GONE);
         mDetailContainer.setVisibility(View.GONE);
         mLlGameDes.setVisibility(View.GONE);
@@ -431,23 +678,34 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             mItemQuestions.setText(questionsList.get(questionsId).getContent());
             mItemQuestionsNum.setText("第 " + (questionsId + 1) + " 题");
             mItemQuestionsAnswer.setText(questionsList.get(questionsId).getAnswer());
-            SharedPreferencesUtils.init(this).putInt("typeId",typeId);
-            SharedPreferencesUtils.init(this).putInt("groupId",groupId);
-            SharedPreferencesUtils.init(this).putInt("questionsId",questionsId);
-            SharedPreferencesUtils.init(MainActivity.this).putBoolean("isAnswer",true);
+            if(userInfo!=null&&userInfo.getId()!=null){
+                SharedPreferencesUtils.init(this,userInfo.getId()).putInt("typeId",typeId)
+                        .putInt("groupId",groupId)
+                        .putInt("questionsId",questionsId)
+                        .putBoolean("isAnswer",true);
+            }
         } else if (questionsId >= questionsList.size()) {
-            SharedPreferencesUtils.init(this).putInt("typeId",0);
-            SharedPreferencesUtils.init(this).putInt("groupId",0);
-            SharedPreferencesUtils.init(this).putInt("questionsId",0);
-            SharedPreferencesUtils.init(MainActivity.this).putBoolean("isPay",false);
-            SharedPreferencesUtils.init(MainActivity.this).putBoolean("isAnswer",false);
+            if(userInfo!=null&&userInfo.getId()!=null){
+                SharedPreferencesUtils.init(this,userInfo.getId()).putInt("typeId",0)
+                        .putInt("typeId",0)
+                        .putInt("groupId",0)
+                        .putInt("questionsId",0)
+                        .putInt("intentNum",0)
+                        .putBoolean("isPay",false)
+                        .putBoolean("isAnswer",false);
+            }
+            typeId = 0;
+            groupId = 0;
+            intentNum = 0;
             questionsId = 0;
             mLlGameQuestions.setVisibility(View.GONE);
+            startRocketAnima(mIvCaiDeng7);
             mLlGameEnd.setVisibility(View.VISIBLE);
         }
     }
 
     public void changePunishmentRewards(int type) {
+        startRocketAnima(mIvCaiDeng6);
         mRlHome.setVisibility(View.GONE);
         mDetailContainer.setVisibility(View.GONE);
         mLlGameDes.setVisibility(View.GONE);
@@ -459,6 +717,15 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         mLlRewards.setVisibility(View.GONE);
         if (type == 0) {
             mLlPunishment.setVisibility(View.VISIBLE);//惩罚
+
+            if(cfList!=null){
+                mPunishmentId = random.nextInt(cfList.size()-1);
+
+                mTxPunishment1.setText(cfList.get(mPunishmentId).get(0));
+                mTxPunishment2.setText(cfList.get(mPunishmentId).get(1));
+                mTxPunishment3.setText(cfList.get(mPunishmentId).get(2));
+
+            }
         } else {
             mLlRewards.setVisibility(View.VISIBLE);//奖励
         }
@@ -468,6 +735,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
 
     public void changeLookAnswer() {
+        startRocketAnima(mIvCaiDeng3);
         mRlHome.setVisibility(View.GONE);
         mDetailContainer.setVisibility(View.GONE);
         mLlGameDes.setVisibility(View.GONE);
@@ -485,8 +753,21 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
      * 获取题目
      */
     public void loadOneData() {
+        L.debug("nettask", "读网络题目数据");
         Map<String, String> map = new HashMap<String, String>();
         NetTask.executeRequestByGet(NetTask.TELGAME_LIST, null, this);
+    }
+
+
+    public void loadCFData() {
+        L.debug("nettask", "读网络惩罚数据");
+        NetTask.executeRequestByGet(NetTask.GAME_CF, null, this);
+
+    }
+    public void loadGameData() {
+        L.debug("nettask", "读游戏数据");
+        NetTask.executeRequestByGet(NetTask.GAME_DIRTY, null, this);
+
     }
 
     /**
@@ -522,9 +803,8 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         map.put("uid", userInfo.getId());
         map.put("deviceNo", DeviceUtil.getDeviceId2Ipad(this));
         map.put("gold", (typeRMB*1000)+"");
-        map.put("price", "30");
+        map.put("price", price+"");
         map.put("num", intentNum+"");
-        map.put("out_trade_no", out_trade_no);
 
         NetTask.executeRequestByPost(NetTask.INTENT_ORDER, map, this);
     }
@@ -609,38 +889,45 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
     @Override
     public void onFinish(QResult resut, String reqId) {
-        if (reqId.equals(NetTask.TELGAME_LIST)) {
 
-            questionsData = new Gson().fromJson(resut.getBody(), QuestionsData.class);
-            preseData(questionsData.getData());
-//            SharedPreferencesUtils.init(MainActivity.this).putBoolean("isPay",false);
+        if (reqId.equals(NetTask.GAME_DIRTY)) {
 
-            isAnswer = SharedPreferencesUtils.init(MainActivity.this).getBoolean("isAnswer");
-
-            if(typeId!=0 && groupId!=0 && SharedPreferencesUtils.init(MainActivity.this).getBoolean("isPay")&&isAnswer){
-                mRlWelcome.setVisibility(View.GONE);
-                changeQuestions();
-            }else if(SharedPreferencesUtils.init(MainActivity.this).getBoolean("isPay")&&!isAnswer){
-                mRlWelcome.setVisibility(View.GONE);
-                isAnswer = true;
-                changeGame();//收到彩票页面
+            if(resut!=null){
+                GameData gameData = new Gson().fromJson(resut.getBody(),GameData.class);
+                if(gameData != null)
+                    gameDataList = gameData.getData();
             }
 
+            L.debug("nettask", resut.getBody());
+        }else if (reqId.equals(NetTask.TELGAME_LIST)) {
+
+            if(resut!=null){
+                mPreseData(resut);
+            }
 
             L.debug("preseData", mQuestionsDataTypeMap.toString());
-        } else if (reqId.equals(NetTask.EXCHANGE_GOLDS)) {
+        }else if(reqId.equals(NetTask.GAME_CF)){
+
+            if(resut!=null){
+                mPreseQuestionaCFData(resut);
+            }
+
+        }else if (reqId.equals(NetTask.EXCHANGE_GOLDS)) {
             if (resut.getResult().equals("10310")){//兑换金币成功
                 isDuiHuan = true;
                 L.debug("nettask","兑换金币成功");
-                intent_order();//去支付
-
+//                intent_order();//去支付
+                isPaying = false;
+                LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
+                goPay = false;
             }else{
                 isDuiHuan = false;
                 isPaying = false;
                 Utils.showToastCenter(MainActivity.this,"兑换金币失败");
-                LemonBubble.showRight(MainActivity.this, "兑换金币失败", 2000);
+                LemonBubble.showError(MainActivity.this, "兑换金币失败", 2000);
             }
-        }else if(reqId.equals(NetTask.INTENT_QUERY)){
+        }
+        /*else if(reqId.equals(NetTask.INTENT_QUERY)){
 
             try {
                 JSONObject object = new JSONObject(resut.getData());
@@ -662,14 +949,73 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 e.printStackTrace();
             }
 
-        }else if(reqId.equals(NetTask.INTENT_ORDER)){
-            playSound2();
-            L.debug("nettask","支付成功");
-            isPaying = false;
-            LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
-            goPay = false;
+        }*/
+        else if(reqId.equals(NetTask.INTENT_ORDER)){
+            /**
+             * //返回
+             {
+             status:10000,//10000成功 10101库存不足 10102余额不足
+             data:"1235466"//成功为订单号，不成功则为错误信息
+             }
+             */
+            if (resut.getResult().equals("10000")){
+
+                playSound2();
+                L.debug("nettask","支付成功");
+                postPay();//兑换金币
+            }else if(resut.getResult().equals("10101")){
+                LemonBubble.hide();
+                Utils.showToastCenter(MainActivity.this,resut.getData());
+                isPaying = false;
+            }else if(resut.getResult().equals("10102")){
+                LemonBubble.hide();
+                Utils.showToastCenter(MainActivity.this,resut.getData());
+//                userHelper.payGold(MainActivity.this);//充值页面
+                userHelper.payGoldCode (MainActivity.this,typeRMB*1000.0);
+                goPay = true;
+                isPaying = false;
+            }
+
         }
 
+    }
+
+    private void mPreseQuestionaCFData(QResult resut) {
+        questionsCFData = new Gson().fromJson(resut.getBody(), cfData.class);
+        if(questionsCFData!=null)
+            cfList = questionsCFData.getData();
+        L.debug("nettask","cfList  "+cfList.size()+"");
+    }
+
+    private void mPreseData(QResult resut) {
+        questionsData = new Gson().fromJson(resut.getBody(), QuestionsData.class);
+        L.debug("nettask","questionsData   "+questionsData.getData().size()+"");
+        /*if(questionsData!=null){
+            int size = questionsData.getData().size();
+            for (int i = 0; i < size; i++) {
+                dataBeanDao.save(questionsData.getData().get(i));
+            }
+        }*/
+        preseData2View(questionsData.getData());
+        loadingdialog.dismiss();
+    }
+
+    private void preseData2View(List<DataBean> data) {
+        preseData(data);
+
+        if(mLlGameQuestions.getVisibility() == View.VISIBLE || mLlGameDes.getVisibility() == View.VISIBLE) return;
+        if(userInfo!=null&&userInfo.getId()!=null){
+            isAnswer = SharedPreferencesUtils.init(MainActivity.this,userInfo.getId()).getBoolean("isAnswer");
+
+            if(typeId!=0 && groupId!=0 && SharedPreferencesUtils.init(MainActivity.this,userInfo.getId()).getBoolean("isPay")&&isAnswer){
+                mRlWelcome.setVisibility(View.GONE);
+                changeQuestions();
+            }else if(SharedPreferencesUtils.init(MainActivity.this,userInfo.getId()).getBoolean("isPay")&&!isAnswer){
+                mRlWelcome.setVisibility(View.GONE);
+                isAnswer = true;
+                changeGame();//收到彩票页面
+            }
+        }
     }
 
     private void checkGlods() {
@@ -677,11 +1023,15 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         if(pay_glods>(int)Float.parseFloat(glodsCount)){
             L.debug("nettask","金币不足-->充值页面");
             Utils.showToastCenter(MainActivity.this,"金币不足！！");
-            userHelper.payGold(MainActivity.this);//充值页面
+//            userHelper.payGold(MainActivity.this);//充值页面
             goPay = true;
         }else{
-            postPay();//兑换金币
-            LemonBubble.showRoundProgress(MainActivity.this, "请求中...");
+
+            //先去支付
+            intent_order();
+
+//            postPay();//兑换金币
+            LemonBubble.showRoundProgress(MainActivity.this, "正在支付...");
         }
         L.debug("nettask","  pay_glods："+pay_glods+"  glodsCount:"+glodsCount);
     }
@@ -690,7 +1040,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
 
     private void preseData(List<DataBean> data) {
-
+        mQuestionsDataTypeMap.clear();
         QuestionsType mQuestionsType = null;
         QuestionsGroup mQuestionsGroup = null;
 
@@ -726,10 +1076,17 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
         }
 
+        L.debug("nettask","mQuestionsDataTypeMap   "+mQuestionsDataTypeMap.size()+"");
+        L.debug("nettask","mQuestionsDataTypeMap----  "+mQuestionsDataTypeMap.get(2).getgroupData().get(2).getData().size()+"");
     }
 
     @Override
     public void onFail(QResponse response, String reqId) {
+        if(!NetStatus.getNetStatus(MainActivity.this)){
+            Utils.showToastCenter(MainActivity.this,"网络断开,请检查网络哦");
+            loadingdialog.dismiss();
+            return;
+        }
         if (reqId.equals(NetTask.EXCHANGE_GOLDS)) {
             isDuiHuan = false;
             isPaying = false;
@@ -738,19 +1095,28 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         }
     }
 
-    @OnClick(R.id.bt_star1)
-    public void onClick() {
-    }
 
     @Override
     public void userInfo(String s) {
         userInfo = new Gson().fromJson(s, UserInfo.class);
-        glodsCount = userInfo.getCoinCount();
-        L.debug("nettask","充值金币返回  userInfo");
-        L.debug("nettask", userInfo.getCoinCount());
-        if(goPay){//充值金币返回
-            L.debug("nettask","充值金币返回-->二次检查金币");
-            checkGlods();
+        if(userInfo!=null){
+
+            if(isOnCreat){
+                initData();
+                isOnCreat = false;
+            }
+
+
+            if(userInfo.getState().equals("0"))
+                finish();
+
+            glodsCount = userInfo.getCoinCount();
+            L.debug("nettask","充值金币返回  userInfo");
+            L.debug("nettask", userInfo.getCoinCount());
+            if(goPay){//充值金币返回
+                L.debug("nettask","充值金币返回-->二次检查金币");
+                checkGlods();
+            }
         }
     }
 
@@ -760,9 +1126,10 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         L.debug("nettask","充值金币返回  onResume");
         if(goPay && userInfo!=null){
             isPaying = false;
-            Utils.showToastCenter(MainActivity.this,"取消支付");
+            userHelper.getUserInfo(this);
+            /*Utils.showToastCenter(MainActivity.this,"取消支付");
             glodsCount = userInfo.getCoinCount();
-            L.debug("nettask", userInfo.getCoinCount());
+            L.debug("nettask", userInfo.getCoinCount());*/
         }
     }
 }
