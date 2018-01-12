@@ -23,9 +23,9 @@ public class C {
      * http://api.lottery.haokefuns.com:80/login/qrRedirect?deviceNo=abc123456hoperu&r=1512555941821&qrId=3b7079b4a92a0cd6aa00a83065e65b00
      */
 
-    public static final String TEST_URL = "http://api.hecaibao88.com";
+    public static final String TEST_URL = "http://dev.api.hcb66.com";
+    public static final String API_URL = "https://api.hecaibao88.com";
 
-    public static final String AGREE_URL = "http://api.youjuu.com/doc/YouJooxy.html";
     public static final String TEST_EXCHANGE_GOLDS_URL = "http://golive-xess.dev.haokefuns.com";
 
     public static final String API_EXCHANGE_GOLDS_URL = "http://api.lottery.haokefuns.com:80";
@@ -47,7 +47,7 @@ public class C {
 
     //public static final String API_URL = "http://101.201.145.243/home/service/index
     // .php?s=/api/Gate/index/";
-    public static final String API_URL = "https://api.hecaibao88.com";
+
 
     public static final String BDKEY = "uxyeDqFWHCz6800hGsXuTNf9";
 

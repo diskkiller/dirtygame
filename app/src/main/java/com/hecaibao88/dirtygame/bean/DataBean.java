@@ -1,5 +1,9 @@
 package com.hecaibao88.dirtygame.bean;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+
 /**
  * @author WangGuoWei
  * @time 2017/12/7 15:17
@@ -33,6 +37,7 @@ package com.hecaibao88.dirtygame.bean;
  * @updateDate $Date$
  * @updateDes ${TODO}
  */
+@Entity
 public class DataBean {
     /**
      * _id : 5a28bbbcea3ab21540b5862d
@@ -45,8 +50,10 @@ public class DataBean {
      * createdAt : 2017-12-07T03:55:40.400Z
      * status : true
      */
+    @Id(autoincrement = true)
+    private Long mId;
 
-    private String _id;
+
     private int type;
     private String content;
     private String answer;
@@ -56,13 +63,25 @@ public class DataBean {
     private String createdAt;
     private boolean status;
 
-    public String get_id() {
-        return _id;
+    @Generated(hash = 1490551254)
+    public DataBean(Long mId, int type, String content, String answer,
+            String problemgroup, int groupId, int __v, String createdAt,
+            boolean status) {
+        this.mId = mId;
+        this.type = type;
+        this.content = content;
+        this.answer = answer;
+        this.problemgroup = problemgroup;
+        this.groupId = groupId;
+        this.__v = __v;
+        this.createdAt = createdAt;
+        this.status = status;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    @Generated(hash = 908697775)
+    public DataBean() {
     }
+
 
     public int getType() {
         return type;
@@ -131,7 +150,6 @@ public class DataBean {
     @Override
     public String toString() {
         return "DataBean{" +
-                "_id='" + _id + '\'' +
                 ", type=" + type +
                 ", content='" + content + '\'' +
                 ", answer='" + answer + '\'' +
@@ -141,5 +159,17 @@ public class DataBean {
                 ", createdAt='" + createdAt + '\'' +
                 ", status=" + status +
                 '}';
+    }
+
+    public Long getMId() {
+        return this.mId;
+    }
+
+    public void setMId(Long mId) {
+        this.mId = mId;
+    }
+
+    public boolean getStatus() {
+        return this.status;
     }
 }

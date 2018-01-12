@@ -1,137 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/ll_punishment_rewards"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:layout_marginTop="100dp"
-android:layout_marginLeft="200dp"
-android:layout_marginRight="200dp"
-android:layout_marginBottom="100dp"
-android:background="@drawable/im_progress_dialog_bg"
-    >
-
-<TextView
-    android:id="@+id/tx_punishment_rewards_title"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textSize="35dp"
-    android:layout_marginTop="100dp"
-    android:textColor="#ffda0a"
-    android:text="运气真棒"
-    android:layout_centerHorizontal="true"
-    />
-
-
-
-<RelativeLayout
-    android:id="@+id/ll_punishment"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="150dp"
-    >
-
-    <TextView
-        android:id="@+id/tx_punishment_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="35dp"
-        android:layout_marginTop="100dp"
-        android:textColor="#ffffff"
-        android:text="答错题，不能刮彩票哦~"
-        />
-
-    <TextView
-        android:id="@+id/tx_punishment1"
-        android:layout_below="@id/tx_punishment_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:layout_marginTop="20dp"
-        android:textColor="#ffffff"
-        android:text="两人各自罚酒一杯，但必须是交杯酒！"
-        />
-    <TextView
-        android:id="@+id/tx_punishment2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tx_punishment1"
-        android:textSize="30dp"
-        android:layout_marginTop="20dp"
-        android:textColor="#ffffff"
-        android:text="男生趴在女生上面做10个俯卧撑！"
-        />
-    <TextView
-        android:id="@+id/tx_punishment3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tx_punishment2"
-        android:textSize="30dp"
-        android:layout_marginTop="20dp"
-        android:textColor="#ffffff"
-        android:text="男生抱着女生原地转三圈！"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tx_punishment3"
-        android:textSize="35dp"
-        android:layout_marginLeft="300dp"
-        android:layout_marginTop="30dp"
-        android:textColor="#ffffff"
-        android:text="任选一条执行哦~"
-        />
-
-</RelativeLayout>
-
-
-
-<LinearLayout
-    android:id="@+id/ll_rewards"
+    android:id="@+id/ll_punishment_rewards"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:visibility="gone"
+
+
     >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="35dp"
-        android:layout_marginTop="50dp"
-        android:textColor="#ffffff"
-        android:text="恭喜你！答对了，喝杯酒庆祝一下，开始刮彩票吧！"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="55dp"
-        android:layout_marginTop="100dp"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="100dp"
         android:layout_marginLeft="200dp"
-        android:textColor="#ffffff"
-        android:text="50W！！就在前方！！！"
+        android:layout_marginRight="200dp"
+        android:layout_marginTop="100dp"
+        android:background="@mipmap/box">
+
+        <RelativeLayout
+            android:id="@+id/ll_punishment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp">
+
+            <TextView
+                android:id="@+id/tx_punishment_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="答错题，不能刮彩票哦~"
+                android:textColor="#ffffff"
+                android:textSize="35dp" />
+
+            <TextView
+                android:id="@+id/tx_punishment1"
+                android:layout_width="800dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tx_punishment_title"
+                android:layout_marginTop="20dp"
+                android:text="两人各自罚酒一杯，但必须是交杯酒！"
+                android:textColor="#ffffff"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/tx_punishment2"
+                android:layout_width="800dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tx_punishment1"
+                android:layout_marginTop="20dp"
+                android:text="男生趴在女生上面做10个俯卧撑！"
+                android:textColor="#ffffff"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/tx_punishment3"
+                android:layout_width="800dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tx_punishment2"
+                android:layout_marginTop="20dp"
+                android:text="男生抱着女生原地转三圈！"
+                android:textColor="#ffffff"
+                android:textSize="25dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tx_punishment3"
+                android:layout_marginLeft="300dp"
+                android:layout_marginTop="30dp"
+                android:text="任选一条执行哦~"
+                android:textColor="#ffffff"
+                android:textSize="35dp" />
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_rewards"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_marginTop="200dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/rewards_intent_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="恭喜你！答对了，喝杯酒庆祝一下，开始刮彩票吧！"
+                android:textColor="#ffffff"
+                android:textSize="35dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="200dp"
+                android:layout_marginTop="50dp"
+                android:text="100W！！就在前方！！！"
+                android:textColor="#ffffff"
+                android:textSize="55dp" />
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/bt_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="150dp"
+            android:background="@mipmap/xiayiti"
+            android:padding="10dp"
+            android:shadowColor="@color/ff1f1f1f"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="2"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/zhuangshi"
+
+            />
+
+        <ImageView
+            android:id="@+id/tx_punishment_rewards_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            />
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/iv_caideng6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
         />
 
+    <ImageView
 
-</LinearLayout>
-<Button
-    android:id="@+id/bt_next"
-    android:layout_width="200dp"
-    android:layout_height="100dp"
-    android:background="@mipmap/btn_nomal"
-    android:textColor="#ffffff"
-    android:textSize="20sp"
-    android:padding="10dp"
-    android:text="下一题"
-    android:shadowColor="@color/ff1f1f1f"
-    android:shadowDx="2"
-    android:shadowDy="2"
-    android:shadowRadius="2"
-    android:layout_alignParentBottom="true"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="100dp"
-    />
+        android:id="@+id/im_shanhua"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/shanhua"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+
+        />
+
 </RelativeLayout>

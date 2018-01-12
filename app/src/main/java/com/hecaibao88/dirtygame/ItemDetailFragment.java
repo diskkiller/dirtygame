@@ -1,3 +1,4 @@
+/*
 package com.hecaibao88.dirtygame;
 
 import android.os.Bundle;
@@ -72,3 +73,4 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 }
+*/

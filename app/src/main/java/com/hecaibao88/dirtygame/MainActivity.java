@@ -364,6 +364,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             changeHome();
             if(reNetIsAvailable == 1 && mLlGameHelp.getVisibility() == View.GONE){
                 if(gameDataList!=null)
+                    adapter.setGameAdapterData(gameDataList);
             }
         }
 

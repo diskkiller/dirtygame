@@ -1,3 +1,4 @@
+/*
 package com.hecaibao88.dirtygame;
 
 
@@ -7,10 +8,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+*/
 /**
  * 分类页面
  * A simple {@link Fragment} subclass.
- */
+ *//*
+
 public class ListFragment extends BaseFragment {
     private ListView lv_left;
 
@@ -36,7 +39,9 @@ public class ListFragment extends BaseFragment {
         }
 
 
-        /*//解析右边数据
+        */
+/*//*
+/解析右边数据
         TypeRightAdapter rightAdapter = new TypeRightAdapter(mContext, titles);
         rv_right.setAdapter(rightAdapter);
 
@@ -53,7 +58,8 @@ public class ListFragment extends BaseFragment {
             }
         });
 
-        rv_right.setLayoutManager(manager);*/
+        rv_right.setLayoutManager(manager);*//*
+
 
 
         Bundle arguments = new Bundle();
@@ -110,4 +116,4 @@ public class ListFragment extends BaseFragment {
         });
     }
 
-}
+}*/

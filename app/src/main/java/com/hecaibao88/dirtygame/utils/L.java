@@ -14,24 +14,26 @@ public class L {
     /**
      *
      */
-    public static boolean debug = true; //BuildConfig.DEBUG; 上线的时候必须要改,否则红包获取的token 有问题
+    public static boolean debug = true;
+
+    public static boolean debugLog = true;
 
     public static void debug(String TAG, String info) {
-        if (debug) {
+        if (debugLog) {
             Log.d(TAG, "" + info);
         }
     }
 
     public static void error(String TAG, Exception ex) {
 
-        if (debug) {
+        if (debugLog) {
             ex.printStackTrace();
             Log.w(TAG, "ex: " + ex.toString());
         }
     }
 
     public static void error(String TAG, Error err) {
-        if (debug) {
+        if (debugLog) {
             err.printStackTrace();
             Log.e(TAG, "err: " + err.toString());
         }

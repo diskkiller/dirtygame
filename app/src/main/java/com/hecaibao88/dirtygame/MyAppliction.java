@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.hecaibao88.dirtygame.bean.GreenDaoManager;
+
 // 全局应用
 public class MyAppliction extends Application {
     private static Context mContext;
@@ -12,6 +14,8 @@ public class MyAppliction extends Application {
     private static long mMainTreadId;
     private static Looper mMainLooper;
     private static Handler mHandler;
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -33,6 +37,9 @@ public class MyAppliction extends Application {
         // 定义一个handler
 
         mHandler = new Handler();
+
+        GreenDaoManager.getInstance();
+
 
 
         //        if (L.debug)

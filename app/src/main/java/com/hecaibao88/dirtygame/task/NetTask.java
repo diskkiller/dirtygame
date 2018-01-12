@@ -6,6 +6,7 @@ import com.hecaibao88.dirtygame.http.QHttpClient;
 import com.hecaibao88.dirtygame.http.QHttpClientImpl;
 import com.hecaibao88.dirtygame.http.QHttpHeader;
 import com.hecaibao88.dirtygame.utils.C;
+import com.hecaibao88.dirtygame.utils.L;
 
 import org.json.JSONObject;
 
@@ -27,7 +28,7 @@ public class NetTask {
 
     public static final String STATUS_SUCCESS = "10000";
     public static final String TELGAME_LIST = "/game/dirty/alls";
-
+    public static final String GAME_CF = "/game/dirty/cf";
 
     /**
      * 兑换金币
@@ -41,6 +42,10 @@ public class NetTask {
      * 支付   post
      */
     public static final String INTENT_ORDER = "/game/dirty/order";
+
+
+
+    public static final String GAME_DIRTY = "/game/dirty/cell";
 
     /**
      * 执行网络请求  post请求
@@ -106,7 +111,11 @@ public class NetTask {
 
         String url = null;
         if(params == null)
-            url = C.TEST_URL+reqId;
+            if (L.debug)
+                url = C.TEST_URL+reqId;
+            else{
+                url = C.API_URL+reqId;
+            }
         else{
             com.hecaibao88.dirtygame.utils.L.debug(TAG, "request jsonObject = " + params.toString());
             url = getUrl(reqId,params);
@@ -116,7 +125,12 @@ public class NetTask {
     }
 
     public static String getUrl(String reqId, Map<String, String> params) {
-        String url = C.TEST_URL+reqId;
+        String url ="";
+        if (L.debug)
+            url = C.TEST_URL+reqId;
+        else{
+            url = C.API_URL+reqId;
+        }
         // 添加url参数
         if (params != null) {
             Iterator<String> it = params.keySet().iterator();

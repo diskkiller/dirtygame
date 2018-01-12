@@ -8,12 +8,12 @@
 
     <ImageView
         android:id="@+id/iv_home"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@mipmap/home"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="100dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
         />
 
     <FrameLayout
@@ -34,5 +34,40 @@
     <include layout="@layout/ll_game_help" android:visibility="gone"/>
 
 
+    <RelativeLayout
+        android:id="@+id/network_state"
+        android:layout_width="800dp"
+        android:layout_height="350dp"
+        android:background="@drawable/im_progress_dialog_bg"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+
+        <TextView
+            android:id="@+id/net_errow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:text="当前网络不可用，请检查网络。"
+            android:textSize="35sp"
+            />
+
+        <TextView
+            android:id="@+id/tv_setting"
+            android:padding="10dp"
+            android:layout_width="150dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/net_errow"
+            android:textColor="@color/white"
+            android:background="@drawable/bt_setting_bg"
+            android:layout_marginTop="30dp"
+            android:text="设  置"
+            android:textSize="30sp"
+            />
+
+    </RelativeLayout>
 
 </RelativeLayout>

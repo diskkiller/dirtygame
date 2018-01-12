@@ -7,14 +7,11 @@ android:background="@drawable/im_progress_dialog_bg"
     >
 
 <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="250dp"
-    android:layout_marginRight="250dp"
-    android:layout_marginTop="150dp"
-    android:layout_marginBottom="150dp"
-    android:background="@mipmap/dialog_bg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/box"
     android:orientation="vertical"
+    android:layout_centerInParent="true"
     >
 
     <TextView
@@ -23,8 +20,8 @@ android:background="@drawable/im_progress_dialog_bg"
         android:gravity="center"
         android:textSize="30sp"
         android:textColor="#ffffff"
+        android:layout_marginTop="90dp"
         android:text="游戏说明"
-        android:background="@mipmap/title_bg"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -32,8 +29,15 @@ android:background="@drawable/im_progress_dialog_bg"
         android:textSize="25sp"
         android:textColor="#ffffff"
         android:lineSpacingExtra="10dp"
-        android:text="1、3个级别（亿万/千万/百万）15个主题（题目难度：亿>千>百）；\n2、一共10个题目；\n3、两人一组，男女最佳； \n4、以小组为单位轮流答题；5、回答正确可刮彩票一张，错误执行游戏随机的惩罚一条；\n注：亿万-6张、千万-4张、百万-2张；刮刮卡由商家配送；"
-        android:layout_marginTop="50dp"
+        android:text="  游戏分成多个富豪等级。每个级别对应不同的主题内容。\n  每个级别的游戏包，赠送不同数量的即开型彩票。\n
+ 土豪们，你们都是高智商的人，相信你一定能过关。\n
+ 脑筋急转弯：\n
+ 回答正确：可以刮开彩票，通过二维码扫描兑奖。\n
+ 回答惩罚：三项惩罚内容，任选其一，保证让你嗨到爆。。。。\n
+ 即开型彩票最高可中奖100万元，从你到100万的距离只差一张即开型彩票。\n
+ 二维码图案：请先扫描二维码，关注公众号，一会兑奖使用。
+"
+        android:layout_marginTop="35dp"
         android:layout_gravity="center"
 
         />
@@ -68,7 +72,7 @@ android:background="@drawable/im_progress_dialog_bg"
             android:gravity="center"
             android:textSize="65sp"
             android:textColor="#ffffff"
-            android:text="   50万  "
+            android:text="   100万  "
             android:layout_marginTop="50dp"
             />
         <TextView
@@ -89,7 +93,7 @@ android:background="@drawable/im_progress_dialog_bg"
         android:textSize="30sp"
         android:textColor="#ffffff"
         android:text="刮刮彩中奖了！！"
-        android:layout_marginLeft="350dp"
+        android:layout_marginLeft="480dp"
         android:layout_marginTop="20dp"
         />
     <TextView
@@ -99,7 +103,7 @@ android:background="@drawable/im_progress_dialog_bg"
         android:textSize="30sp"
         android:textColor="#ffffff"
         android:text="记得用和彩宝微信公众号兑奖哦！"
-        android:layout_marginLeft="350dp"
+        android:layout_marginLeft="480dp"
         android:layout_marginTop="15dp"
         />
 
@@ -109,9 +113,9 @@ android:background="@drawable/im_progress_dialog_bg"
     <Button
         android:id="@+id/bt_gogogo"
         android:layout_gravity="center"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:background="@mipmap/btn_nomal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/wozhidaole"
         android:textColor="#ffffff"
         android:layout_marginTop="100dp"
         android:textSize="20sp"
@@ -120,7 +124,6 @@ android:background="@drawable/im_progress_dialog_bg"
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="2"
-        android:text="立即开始"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="300dp"
@@ -132,8 +135,16 @@ android:background="@drawable/im_progress_dialog_bg"
     android:layout_height="250dp"
     android:layout_alignParentBottom="true"
     android:layout_alignParentLeft="true"
-    android:layout_marginBottom="200dp"
+    android:layout_marginBottom="150dp"
     android:layout_marginLeft="300dp"
     android:background="@mipmap/erweima"
     />
+
+
+    <ImageView
+        android:id="@+id/iv_caideng1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
 </RelativeLayout>
