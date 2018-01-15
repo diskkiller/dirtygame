@@ -37,7 +37,6 @@ import java.util.List;
  */
 public class cfData {
 
-
     /**
      * status : 10000
      * data : [["男伴双手抱住女伴的腰部，嘴里叼着一小块水果，两个人用30秒的时间吃完。",

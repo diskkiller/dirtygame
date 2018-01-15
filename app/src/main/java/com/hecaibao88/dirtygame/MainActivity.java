@@ -45,6 +45,7 @@ import com.hecaibao88.dirtygame.http.QResult;
 import com.hecaibao88.dirtygame.task.NetTask;
 import com.hecaibao88.dirtygame.utils.C;
 import com.hecaibao88.dirtygame.utils.DeviceUtil;
+import com.hecaibao88.dirtygame.utils.Excel2JSONHelper;
 import com.hecaibao88.dirtygame.utils.L;
 import com.hecaibao88.dirtygame.utils.SharedPreferencesUtils;
 import com.hecaibao88.dirtygame.utils.Utils;
@@ -56,6 +57,10 @@ import net.lemonsoft.lemonbubble.LemonBubbleInfo;
 import net.lemonsoft.lemonbubble.LemonBubbleView;
 import net.lemonsoft.lemonbubble.interfaces.LemonBubbleLifeCycleDelegate;
 
+import org.json.JSONArray;
+
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -204,6 +209,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     private DataBeanDao dataBeanDao;
     private boolean isOnCreat = true;
     private boolean mRlWelcome_show = false;
+    InputStream inputStream = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,14 +234,19 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         userHelper.getUserInfo(this);
         fileUtil = new FileUtil();
 
+        try {
+            File file = new File("file:///android_asset/roomgame_chengfa.xlsx");
+            Excel2JSONHelper excelHelper = new Excel2JSONHelper();
+            //dir文件，0代表是第一行为保存到数据库或者实体类的表头，一般为英文的字符串，2代表是第二种模板，
+            JSONArray jsonArray = excelHelper.readExcle(file, 1, 2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         dataBeanDao = GreenDaoManager.getInstance().getSession().getDataBeanDao();
 
-//        Glide.with(this).load(R.mipmap.caideng).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(mIvCaiDeng);
-//        Glide.with(this).load(R.mipmap.caideng).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(mIvCaiDeng1);
-
         startRocketAnima(mIvCaiDeng);
-
-
 
         androidAudio = new AndroidAudio(this);
         mMusic = androidAudio.newMusic("m1.mp3");
@@ -272,9 +283,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
                 if(!isPaying){
 
-
-                    if(reNetIsAvailable == 1)
-                        isAnswer = true;
 
                     /**
                      * 万亿-1988（刺激）-20张50元面值即开彩-每次刮2张；
@@ -539,7 +547,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 //                rocketAnimation1.stop();
                 playSound2();
                 mLlGameHelp.setVisibility(View.GONE);//二维码页面消失进入选择页面
-                isAnswer = true;
                 if(!isLoad){
 //                    loadingdialog.show();
                     adapter.setGameAdapterData(gameDataList);
@@ -607,15 +614,11 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
 
     private void showPay() {
-        if (isAnswer) {
-
             isPaying = true;
 //            intent_query();
             LemonBubble.showRoundProgress(MainActivity.this, "正在支付...");
             //先去支付
             intent_order();
-
-        }
     }
 
 
@@ -1013,7 +1016,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 changeQuestions();
             }else if(SharedPreferencesUtils.init(MainActivity.this,userInfo.getId()).getBoolean("isPay")&&!isAnswer){
                 mRlWelcome.setVisibility(View.GONE);
-                isAnswer = true;
                 changeGame();//收到彩票页面
             }
         }
@@ -1024,7 +1026,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         if(pay_glods>(int)Float.parseFloat(glodsCount)){
             L.debug("nettask","金币不足-->充值页面");
             Utils.showToastCenter(MainActivity.this,"金币不足！！");
-//            userHelper.payGold(MainActivity.this);//充值页面
             goPay = true;
         }else{
 
@@ -1127,10 +1128,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         L.debug("nettask","充值金币返回  onResume");
         if(goPay && userInfo!=null){
             isPaying = false;
-            userHelper.getUserInfo(this);
-            /*Utils.showToastCenter(MainActivity.this,"取消支付");
-            glodsCount = userInfo.getCoinCount();
-            L.debug("nettask", userInfo.getCoinCount());*/
         }
     }
 }
