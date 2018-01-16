@@ -789,7 +789,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
      */
     public void intent_order() {
 
-        L.debug("nettask","兑换成功  去支付");
+        L.debug("nettask","  去支付");
 
         Map<String, String> map = new HashMap<String, String>();
 
@@ -831,6 +831,13 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 Utils.showToastCenter(MainActivity.this,resut.getData());
                 userHelper.payGoldCode (MainActivity.this,typeRMB*1000.0);
                 goPay = true;
+            }else if(resut.getResult().equals("10105")){
+                playSound2();
+                L.debug("nettask","支付成功");
+                if(confimDialog.isShowing())
+                    confimDialog.dismiss();
+                LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
+                goPay = false;
             }
 
         }
