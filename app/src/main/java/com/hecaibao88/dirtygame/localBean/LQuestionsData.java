@@ -1,12 +1,10 @@
-package com.hecaibao88.dirtygame.bean;
-
-import com.google.gson.annotations.SerializedName;
+package com.hecaibao88.dirtygame.localBean;
 
 import java.util.List;
 
 /**
  * @author WangGuoWei
- * @time 2017/12/25 15:19
+ * @time 2018/1/15 17:03
  * @des ${TODO}
  * <p>
  * ┽
@@ -37,7 +35,7 @@ import java.util.List;
  * @updateDate $Date$
  * @updateDes ${TODO}
  */
-public class cfData {
+public class LQuestionsData {
 
 
     private List<DataBean> data;
@@ -52,40 +50,47 @@ public class cfData {
 
     public static class DataBean {
         /**
-         * 0 : 男伴双手抱住女伴的腰部，嘴里叼着一小块水果，两个人用30秒内吃完
-         * 1 : 女伴用一只手抱住男伴的腰部，另外一只手用滑动的方式从胸部一直滑到胯部，时间不能少于30秒。
-         * 2 : 两个人每人各自喝一瓶酒，左右各选四个人友情赞助同样喝一瓶酒
+         * type : 1
+         * groupId : 1
+         * content : 冬瓜、黄瓜、西瓜、南瓜都能吃，什么瓜不能吃？
+         * answer : 傻瓜
          */
 
-        @SerializedName("0")
-        private String _$0;
-        @SerializedName("1")
-        private String _$1;
-        @SerializedName("2")
-        private String _$2;
+        private String type;
+        private String groupId;
+        private String content;
+        private String answer;
 
-        public String get_$0() {
-            return _$0;
+        public String getType() {
+            return type;
         }
 
-        public void set_$0(String _$0) {
-            this._$0 = _$0;
+        public void setType(String type) {
+            this.type = type;
         }
 
-        public String get_$1() {
-            return _$1;
+        public String getGroupId() {
+            return groupId;
         }
 
-        public void set_$1(String _$1) {
-            this._$1 = _$1;
+        public void setGroupId(String groupId) {
+            this.groupId = groupId;
         }
 
-        public String get_$2() {
-            return _$2;
+        public String getContent() {
+            return content;
         }
 
-        public void set_$2(String _$2) {
-            this._$2 = _$2;
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public String getAnswer() {
+            return answer;
+        }
+
+        public void setAnswer(String answer) {
+            this.answer = answer;
         }
     }
 }

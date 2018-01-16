@@ -50,26 +50,26 @@ public class QuestionsType {
      * "createdAt":"2017-12-07T04:37:02.459Z","status":true}]
      */
 
-    private int type;
+    private String type;
 
-    private HashMap<Integer,QuestionsGroup> mQuestionsGroupMap = new HashMap<>();
+    private HashMap<String,QuestionsGroup> mQuestionsGroupMap = new HashMap<>();
 
     public List<Integer> mQuestionsGroupListNum = new ArrayList<>();
 
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public HashMap<Integer,QuestionsGroup> getgroupData() {
+    public HashMap<String,QuestionsGroup> getgroupData() {
         return mQuestionsGroupMap;
     }
 
-    public void setgroupData(HashMap<Integer, QuestionsGroup> groupData) {
+    public void setgroupData(HashMap<String, QuestionsGroup> groupData) {
         this.mQuestionsGroupMap = groupData;
     }
 

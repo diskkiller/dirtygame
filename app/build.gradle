@@ -23,6 +23,7 @@ android {
         versionCode 2
         versionName "0.0.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -65,17 +66,15 @@ dependencies {
     compile project(path: ':lemonbubble')
     compile files('libs/nineoldandroids-2.4.0.jar')
     /*compile 'com.github.bumptech.glide:glide:3.7.0'
-                    compile('com.github.bumptech.glide:okhttp3-integration:1.4.0') {
-                        exclude group: 'glide-parent'
-                    }*/
-
+                        compile('com.github.bumptech.glide:okhttp3-integration:1.4.0') {
+                            exclude group: 'glide-parent'
+                        }*/
     /*compile files('libs/nineoldandroids-2.4.0.jar')
-                            compile 'tv.danmaku.ijk.media:ijkplayer-java:0.5.1'
-                            compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.5.1'
-                            compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.5.1'*/
+                                compile 'tv.danmaku.ijk.media:ijkplayer-java:0.5.1'
+                                compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.5.1'
+                                compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.5.1'*/
     compile 'org.slf4j:slf4j-android:1.7.21'
     compile project(':GlideImageView')
-    compile files('libs/poi-3.15.jar')
-    compile files('libs/poi-ooxml-3.15.jar')
+    compile 'com.android.support:multidex:1.0.1'
 }
 

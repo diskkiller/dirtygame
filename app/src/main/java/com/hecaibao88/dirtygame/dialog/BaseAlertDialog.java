@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public abstract class BaseAlertDialog<T extends BaseAlertDialog<T>> extends BaseDialog {
     /** container */
-    protected LinearLayout ll_container;
+    public LinearLayout ll_container;
     //title
     /** title */
     protected TextView tv_title;
@@ -28,7 +28,7 @@ public abstract class BaseAlertDialog<T extends BaseAlertDialog<T>> extends Base
 
     //content
     /** content */
-    protected RelativeLayout rl_content;
+    public RelativeLayout rl_content;
     /** content text */
     protected String content;
     /** show gravity of content(正文内容显示位置) */
@@ -71,7 +71,8 @@ public abstract class BaseAlertDialog<T extends BaseAlertDialog<T>> extends Base
     /** corner radius,dp(圆角程度,单位dp) */
     protected float cornerRadius_DP = 3;
     /** background color(背景颜色) */
-    protected int bgColor = Color.parseColor("#ffffff");
+//    protected int bgColor = Color.parseColor("#ffffff");
+    protected int bgColor = Color.parseColor("#00000000");
     private View viwe;
 
     /**

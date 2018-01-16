@@ -1,7 +1,5 @@
 package com.hecaibao88.dirtygame;
 
-import java.util.List;
-
 /**
  * @author WangGuoWei
  * @time 2017/12/26 13:56
@@ -46,79 +44,59 @@ public class GameData {
      * "intentNum":20,"price":30,"imageUrl":"http://cdn.hcb66.com/tu5.png"}]
      */
 
-    private int status;
-    private List<DataBean> data;
+    private int typeRMB;
+    private int typeId;
+    private int intentNum;
+    private int price;
+    private int imageId;
 
-    public int getStatus() {
-        return status;
+
+    public GameData(int typeRMB, int typeId, int intentNum, int price, int imageId) {
+        this.typeRMB = typeRMB;
+        this.typeId = typeId;
+        this.intentNum = intentNum;
+        this.price = price;
+        this.imageId = imageId;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public int getTypeRMB() {
+        return typeRMB;
     }
 
-    public List<DataBean> getData() {
-        return data;
+    public void setTypeRMB(int typeRMB) {
+        this.typeRMB = typeRMB;
     }
 
-    public void setData(List<DataBean> data) {
-        this.data = data;
+    public int getTypeId() {
+        return typeId;
     }
 
-    public static class DataBean {
-        /**
-         * typeRMB : 188
-         * typeId : 1
-         * intentNum : 10
-         * price : 10
-         * imageUrl : http://cdn.hcb66.com/tu1.png
-         */
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
 
-        private int typeRMB;
-        private int typeId;
-        private int intentNum;
-        private int price;
-        private String imageUrl;
+    public int getIntentNum() {
+        return intentNum;
+    }
 
-        public int getTypeRMB() {
-            return typeRMB;
-        }
+    public void setIntentNum(int intentNum) {
+        this.intentNum = intentNum;
+    }
 
-        public void setTypeRMB(int typeRMB) {
-            this.typeRMB = typeRMB;
-        }
+    public int getPrice() {
+        return price;
+    }
 
-        public int getTypeId() {
-            return typeId;
-        }
+    public void setPrice(int price) {
+        this.price = price;
+    }
 
-        public void setTypeId(int typeId) {
-            this.typeId = typeId;
-        }
+    public int getImageUrl() {
+        return imageId;
+    }
 
-        public int getIntentNum() {
-            return intentNum;
-        }
-
-        public void setIntentNum(int intentNum) {
-            this.intentNum = intentNum;
-        }
-
-        public int getPrice() {
-            return price;
-        }
-
-        public void setPrice(int price) {
-            this.price = price;
-        }
-
-        public String getImageUrl() {
-            return imageUrl;
-        }
-
-        public void setImageUrl(String imageUrl) {
-            this.imageUrl = imageUrl;
-        }
+    public void setImageUrl(int imageId) {
+        this.imageId = imageId;
     }
 
    /* public String imageUrl;

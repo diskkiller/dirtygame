@@ -41,7 +41,7 @@ public class NetTask {
     /**
      * 支付   post
      */
-    public static final String INTENT_ORDER = "/game/dirty/order";
+    public static final String INTENT_ORDER = "/game/dirty/order2";
 
 
 

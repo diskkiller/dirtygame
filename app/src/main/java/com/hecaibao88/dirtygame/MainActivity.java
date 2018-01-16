@@ -30,22 +30,20 @@ import com.google.gson.Gson;
 import com.hecaibao88.dirtygame.audio.AndroidAudio;
 import com.hecaibao88.dirtygame.audio.Music;
 import com.hecaibao88.dirtygame.audio.Sound;
-import com.hecaibao88.dirtygame.bean.DataBean;
 import com.hecaibao88.dirtygame.bean.DataBeanDao;
 import com.hecaibao88.dirtygame.bean.GreenDaoManager;
-import com.hecaibao88.dirtygame.bean.QuestionsData;
 import com.hecaibao88.dirtygame.bean.QuestionsGroup;
 import com.hecaibao88.dirtygame.bean.QuestionsType;
 import com.hecaibao88.dirtygame.bean.UserInfo;
 import com.hecaibao88.dirtygame.bean.cfData;
 import com.hecaibao88.dirtygame.dialog.ImProgressDialog;
+import com.hecaibao88.dirtygame.dialog.NormalDialog;
 import com.hecaibao88.dirtygame.http.QHttpClient;
 import com.hecaibao88.dirtygame.http.QResponse;
 import com.hecaibao88.dirtygame.http.QResult;
+import com.hecaibao88.dirtygame.localBean.LQuestionsData;
 import com.hecaibao88.dirtygame.task.NetTask;
-import com.hecaibao88.dirtygame.utils.C;
 import com.hecaibao88.dirtygame.utils.DeviceUtil;
-import com.hecaibao88.dirtygame.utils.Excel2JSONHelper;
 import com.hecaibao88.dirtygame.utils.L;
 import com.hecaibao88.dirtygame.utils.SharedPreferencesUtils;
 import com.hecaibao88.dirtygame.utils.Utils;
@@ -57,16 +55,14 @@ import net.lemonsoft.lemonbubble.LemonBubbleInfo;
 import net.lemonsoft.lemonbubble.LemonBubbleView;
 import net.lemonsoft.lemonbubble.interfaces.LemonBubbleLifeCycleDelegate;
 
-import org.json.JSONArray;
-
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -177,20 +173,18 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     ImageView mIvCaiDeng6;
     @Bind(R.id.iv_caideng7)
     ImageView mIvCaiDeng7;
-    private QuestionsData questionsData;
+    private LQuestionsData questionsData;
     private int groupId, questionsId, typeId;
     private boolean isAnswer = false;
     private AndroidAudio androidAudio;
     private Music mMusic;
     private Sound mSound1, mSound2, mSound3;
-    private List<DataBean> questionsList;
+    private List<LQuestionsData.DataBean> questionsList;
     private UserHelper userHelper;
     private UserInfo userInfo;
     private int intentNum,price;
     private String glodsCount;
     private int typeRMB;
-    private boolean goPay = false;
-    private boolean isPaying = false;
     private int pay_glods;
     private Random random;
     private String out_trade_no;
@@ -199,9 +193,11 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             ,rocketAnimation3,rocketAnimation4,rocketAnimation5,rocketAnimation6,rocketAnimation7;
     private int mPunishmentId;
     private cfData questionsCFData;
-    private List<List<String>> cfList;
+    private List<cfData.DataBean> cfList;
     private FileUtil fileUtil;
-    private List gameDataList =  new ArrayList<GameData.DataBean>();
+    private List gameDataList =  new ArrayList<GameData>();
+    private List mPunishmentIdList =  new ArrayList<Integer>();
+    private HashMap<Integer, HashSet> mSetTypeMap = new HashMap<>();
     private GameAdapter1 adapter;
     private RecyclerView recyclerView;
     private boolean isLoad = false;
@@ -210,6 +206,11 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     private boolean isOnCreat = true;
     private boolean mRlWelcome_show = false;
     InputStream inputStream = null;
+
+    private HashSet questionSet,mPunishmenSet,typeSet;
+    private RelativeLayout dialogContenView;
+    private NormalDialog confimDialog;
+    private boolean goPay = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,20 +230,12 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(mReceiver, mFilter);
 
+
+        confimDialog = new NormalDialog(this);
         loadingdialog = new ImProgressDialog.Builder(this).create();
         userHelper = UserHelper.initialize(this, this);
         userHelper.getUserInfo(this);
         fileUtil = new FileUtil();
-
-        try {
-            File file = new File("file:///android_asset/roomgame_chengfa.xlsx");
-            Excel2JSONHelper excelHelper = new Excel2JSONHelper();
-            //dir文件，0代表是第一行为保存到数据库或者实体类的表头，一般为英文的字符串，2代表是第二种模板，
-            JSONArray jsonArray = excelHelper.readExcle(file, 1, 2);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 
         dataBeanDao = GreenDaoManager.getInstance().getSession().getDataBeanDao();
 
@@ -274,14 +267,12 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         recyclerView.setAdapter(adapter);
         adapter.SetOnItemClickListener(new GameAdapter1.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position, GameData.DataBean gameData) {
+            public void onItemClick(View view, int position, GameData gameData) {
 
                 if(!NetStatus.getNetStatus(MainActivity.this)){
                     Utils.showToastCenter(MainActivity.this,"网络断开,请检查网络哦");
                     return;
                 }
-
-                if(!isPaying){
 
 
                     /**
@@ -291,8 +282,83 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
                     typeRMB = gameData.getTypeRMB();
                     typeId = gameData.getTypeId();
-                    if(mQuestionsDataTypeMap.get(typeId)!=null)
-                        groupId = random.nextInt(mQuestionsDataTypeMap.get(typeId).getgroupData().size()-1)+1;
+                    if(mQuestionsDataTypeMap.get(typeId+"")!=null){
+
+
+                        //每种类型各取随机数
+                        questionSet = mSetTypeMap.get(typeId);
+
+                        if(questionSet == null){
+                            questionSet = new HashSet();
+                            mSetTypeMap.put(typeId,questionSet);
+                        }
+
+
+
+                        if(mPunishmenSet == null)
+                            mPunishmenSet = new HashSet();
+                        else{
+                            mPunishmenSet.clear();
+                            mPunishmentIdList.clear();
+                        }
+
+
+                        int tempCount = 0;
+                        int size = mQuestionsDataTypeMap.get(typeId+"").getgroupData().size();
+
+                        while (true){
+                            int temp_groupId = random.nextInt(size);
+                            temp_groupId = temp_groupId+1;
+                            Iterator it = questionSet.iterator();
+                            if(questionSet.size() == mQuestionsDataTypeMap.get(typeId+"").getgroupData().size()){//全部添加过了
+
+                                while(it.hasNext()){
+                                    groupId = (int) it.next();//取set中第一个值
+                                    L.debug("nettask","全部添加过了  questionSet: "+questionSet.toString()+"  groupId: "+groupId);
+                                    questionSet.clear();
+                                    break;
+                                }
+
+                            }
+
+                            if(questionSet.add(temp_groupId)){//添加成功  没有重复
+                                groupId = temp_groupId;
+                                tempCount = 0;
+                                L.debug("nettask","添加成功,没有重复  questionSet: "+questionSet.toString()+"  groupId: "+groupId);
+                                break;
+                            }else{
+
+                                tempCount++;
+                                if(tempCount > 10){//随机10次都是同样的值且set中包含
+
+                                    for (int i = 0; i < size; i++) {//遍历原始map
+                                        if(groupId!=temp_groupId){//取出与当前不一样的值
+                                            groupId = temp_groupId;
+                                            L.debug("nettask","随机10次,取出与当前不一样的值  questionSet: "+questionSet.toString()+"  groupId: "+groupId);
+                                            break;
+                                        }
+
+                                        L.debug("nettask","随机10次都是同样的值且set中包含  questionSet: "+questionSet.toString()+"  temp_groupId: "+temp_groupId);
+                                    }
+
+                                }
+
+
+                            }
+                        }
+
+
+                        Utils.randomSet(0,cfList.size()-1,10,mPunishmenSet);
+
+                        Iterator it = mPunishmenSet.iterator();
+                        while(it.hasNext()){
+                            mPunishmentIdList.add((int) it.next());
+                        }
+
+                        L.debug("nettask","随机10个惩罚  mPunishmenSet: "+mPunishmenSet.toString());
+                        L.debug("nettask","随机10个惩罚  mPunishmentIdList: "+mPunishmentIdList.toString());
+
+                    }
                     else{
                         Utils.showToastCenter(MainActivity.this,"暂未开放");
                         return;
@@ -302,9 +368,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                     L.debug("nettask","groupId    "+groupId+"");
                     L.debug("nettask","typeId    "+typeId+"");
                     showPay();
-                }else{
-                    Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
-                }
             }
         });
 
@@ -348,7 +411,8 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             }
         });
 
-        loadingdialog.show();
+
+        showCofirmDialog();
 
     }
 
@@ -376,11 +440,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             }
         }
 
-
-        /*if(dataBeanDao.queryBuilder().list()!=null&&dataBeanDao.queryBuilder().list().size()>0)
-            preseData2View(dataBeanDao.queryBuilder().list());
-        else*/
-        loadOneData();
+        loadQuestionData();
         loadCFData();
 
 
@@ -443,57 +503,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             .id.bt_gogogo, R.id.bt_star1, R.id.bt_look_answer, R.id.bt_next,R.id.ll_game_des,R.id.ll_game_des1,R.id.tv_setting})
     public void onClick(View view) {
         switch (view.getId()) {
-            /*case R.id.iv_baiyi:
-                if(!isPaying){
-                    typeRMB = 666;//送60张5元
-                    typeId = 2;
-                    groupId = random.nextInt(2)+1;
-                    intentNum = 60;
-                    price = 5;
-                    L.debug("nettask",groupId+"");
-                    showPay();
-                }else{
-                    Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
-                }
-                *//*typeId = 2;
-                groupId = random.nextInt(2)+1;
-                intentNum = 30;
-                changeGame();*//*
-                break;
-            case R.id.iv_qianyi:
-                if(!isPaying) {
-                    typeRMB = 1188;//送30张20元
-                    typeId = 3;
-                    groupId = random.nextInt(2)+1;
-                    intentNum = 30;
-                    price = 20;
-                    L.debug("nettask",groupId+"");
-                    showPay();
-                }else{
-                    Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
-                }
-                *//*typeId = 3;
-                groupId = random.nextInt(2)+1;
-                intentNum = 20;
-                changeGame();*//*
-                break;
-            case R.id.iv_yiwan:
-                if(!isPaying) {
-                    typeRMB = 1988;//送60张5元
-                    typeId = 1;
-                    intentNum = 20;
-                    price = 50;
-                    groupId = random.nextInt(2)+1;
-                    L.debug("nettask",groupId+"");
-                    showPay();
-                }else{
-                    Utils.showToastCenter(MainActivity.this,"正在支付中...请稍后...");
-                }
-                *//*typeId = 1;
-                groupId = random.nextInt(2)+1;
-                intentNum = 60;
-                changeGame();*//*
-                break;*/
+
             case R.id.bt_punishment:
                 playSound1();
                 questionsId++;
@@ -506,7 +516,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 questionsId++;
                 changePunishmentRewards(1);
                 mIvShanHua.setVisibility(View.VISIBLE);
-                mRewardsNum.setText("恭喜你！答对了，喝杯酒庆祝一下，请刮"+(intentNum/10)+"张即开彩");
+                mRewardsNum.setText("恭喜你！答对了，喝杯酒庆祝一下，请刮即开彩");
                 mTxPunishmentRewardsTitle.setImageResource(R.mipmap.zhenbang);
                 break;
             case R.id.ll_game_des://R.id.bt_star://点击已收到
@@ -536,25 +546,20 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                 changeQuestions();
                 break;
             case R.id.rl_welcome://欢迎页点击
-//                rocketAnimation.stop();
-//                rocketAnimation1.start();
                 startRocketAnima(mIvCaiDeng1);
                 playSound2();
                 mRlWelcome.setVisibility(View.GONE);//欢迎页
                 mLlGameHelp.setVisibility(View.VISIBLE);//二维码页面
                 break;
             case R.id.bt_gogogo://二维码页面点击
-//                rocketAnimation1.stop();
                 playSound2();
                 mLlGameHelp.setVisibility(View.GONE);//二维码页面消失进入选择页面
                 if(!isLoad){
-//                    loadingdialog.show();
                     adapter.setGameAdapterData(gameDataList);
                     isLoad = true;
                 }
                 break;
             case R.id.ll_game_des1://R.id.bt_star1:
-//                rocketAnimation5.stop();
                 playSound2();
                 mLlGameDes1.setVisibility(View.GONE);//等不及页面消失
                 changeQuestions();//答题页面
@@ -601,7 +606,8 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
                         .getSystemService(Context.CONNECTIVITY_SERVICE);
                 info = connectivityManager.getActiveNetworkInfo();
                 if (info != null && info.isAvailable()) {
-                    initData();
+                    if(reNetIsAvailable == 1)
+                        initData();
                     mNetworkState.setVisibility(View.GONE);
                 } else {
                     reNetIsAvailable = 1;
@@ -614,10 +620,8 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
 
     private void showPay() {
-            isPaying = true;
-//            intent_query();
             LemonBubble.showRoundProgress(MainActivity.this, "正在支付...");
-            //先去支付
+            //支付
             intent_order();
     }
 
@@ -633,14 +637,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
     }
 
-    public void changeMDetailContainer() {
-        mRlHome.setVisibility(View.GONE);
-        mDetailContainer.setVisibility(View.VISIBLE);
-        mLlGameDes.setVisibility(View.GONE);
-        mLlGameQuestions.setVisibility(View.GONE);
-        mLlPunishmentRewards.setVisibility(View.GONE);
-        mLlGameEnd.setVisibility(View.GONE);
-    }
 
     public void changeHome() {
         if(reNetIsAvailable == 0)
@@ -676,7 +672,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         mLlGameQuestionsAnswer.setVisibility(View.GONE);
 
 
-        questionsList = mQuestionsDataTypeMap.get(typeId).getgroupData().get(groupId).getData();
+        questionsList = mQuestionsDataTypeMap.get(typeId+"").getgroupData().get(groupId+"").getData();
 
         if (questionsList != null && questionsId <= questionsList.size() - 1) {
             mItemQuestions.setText(questionsList.get(questionsId).getContent());
@@ -722,14 +718,16 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         if (type == 0) {
             mLlPunishment.setVisibility(View.VISIBLE);//惩罚
 
-            if(cfList!=null){
-                mPunishmentId = random.nextInt(cfList.size()-1);
+            mPunishmentId = (int) mPunishmentIdList.get(questionsId);
 
-                mTxPunishment1.setText(cfList.get(mPunishmentId).get(0));
-                mTxPunishment2.setText(cfList.get(mPunishmentId).get(1));
-                mTxPunishment3.setText(cfList.get(mPunishmentId).get(2));
 
-            }
+
+                /*mPunishmentId = random.nextInt(cfList.size()-1);*/
+
+            mTxPunishment1.setText(cfList.get(mPunishmentId).get_$0());
+            mTxPunishment2.setText(cfList.get(mPunishmentId).get_$1());
+            mTxPunishment3.setText(cfList.get(mPunishmentId).get_$2());
+
         } else {
             mLlRewards.setVisibility(View.VISIBLE);//奖励
         }
@@ -756,38 +754,29 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     /**
      * 获取题目
      */
-    public void loadOneData() {
-        L.debug("nettask", "读网络题目数据");
-        Map<String, String> map = new HashMap<String, String>();
-        NetTask.executeRequestByGet(NetTask.TELGAME_LIST, null, this);
+    public void loadQuestionData() {
+        String timu = Utils.getFromAssets(this, "timu.json").trim();
+        mPreseData(timu);
+
     }
 
 
     public void loadCFData() {
-        L.debug("nettask", "读网络惩罚数据");
-        NetTask.executeRequestByGet(NetTask.GAME_CF, null, this);
-
+        String chengfa = Utils.getFromAssets(this, "chengfa.json").trim();
+        mPreseQuestionaCFData(chengfa);
     }
     public void loadGameData() {
-        L.debug("nettask", "读游戏数据");
-        NetTask.executeRequestByGet(NetTask.GAME_DIRTY, null, this);
-
+        //int typeRMB, int typeId, int intentNum, int price, int imageId
+        GameData gamdataType1 = new GameData(30,1,5,30,R.mipmap.type_388);
+        GameData gamdataType2 = new GameData(30,2,10,30,R.mipmap.type_588);
+        GameData gamdataType3 = new GameData(30,3,15,30,R.mipmap.type_888);
+        GameData gamdataType4 = new GameData(30,4,20,30,R.mipmap.type_1188);
+        gameDataList.add(gamdataType1);
+        gameDataList.add(gamdataType2);
+        gameDataList.add(gamdataType3);
+        gameDataList.add(gamdataType4);
     }
 
-    /**
-     * 查询库存
-     */
-    public void intent_query() {
-
-        L.debug("nettask","查询库存");
-
-        Map<String, String> map = new HashMap<String, String>();
-
-        map.put("deviceNo", DeviceUtil.getDeviceId2Ipad(this));
-        map.put("price", "30");
-
-        NetTask.executeRequestByGet(NetTask.INTENT_QUERY, map, this);
-    }
 
     /**   支付
      * {
@@ -814,147 +803,11 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     }
 
 
-    /**
-     * spServiceNo
-     * APPID String 必填
-     * <p>
-     * userNo 用户id String 必填
-     * <p>
-     * golds 金币 String 必填
-     * <p>
-     * timeStamp 时间戳(毫秒) String 必填
-     * <p>
-     * nonceStr 随机数 String 必填
-     * <p>
-     * signType 加密类型 String 必填 默认MD5
-     * <p>
-     * sign 签名 String 必填
-     * <p>
-     * out_trade_no 兑换业务号 String 必填
-     * <p>
-     * deviceNo 设备号 String 必填
-     * <p>
-     * remark 备注 String 选填
-     * <p>
-     * dirtyGame  测试
-     * appid:9BD28316AC664591BA34F7431E4CC486
-     * appkey:E4D7043C6087414FAF5EC938547D78FD
-     *
-     * 正式环境
-     dirtyGame
-     appid:6E0A4B9EEF60488AB3B80687F6789F7E
-     appkey:B834CEE2B6124BA1B7C2DD8E5C963F01
-     */
-
-    public void postPay() {
-
-        L.debug("nettask","兑换金币");
-
-        String appid = "";
-        String appkey = "";
-        if(L.debug){
-             appid = C.TEST_APPID;
-             appkey = C.TEST_APPKEY;
-        }else{
-            appid = C.API_APPID;
-            appkey = C.API_APPKEY;
-        }
-
-        /*appid = C.API_APPID;
-        appkey = C.API_APPKEY;*/
-
-
-        Map<String, String> map = new HashMap<String, String>();
-
-        map.put("spServiceNo", appid);
-        map.put("userNo", userInfo.getId());
-        map.put("golds", (typeRMB*1000)+"");
-        map.put("timeStamp", System.currentTimeMillis() + "");
-        UUID uuid = UUID.randomUUID();
-        map.put("nonceStr", uuid.toString().replace("-", ""));
-        map.put("signType", "MD5");
-
-
-        out_trade_no = uuid.toString().replace("-", "");
-        map.put("out_trade_no", out_trade_no);
-        map.put("deviceNo", DeviceUtil.getDeviceId2Ipad(this));
-
-
-        String sign = Utils.makeSign(map, appkey);
-
-        map.put("sign", sign);
-
-
-        //URL http://golive-xess.dev.haokefuns.com/lotteryGoldsExchangeRecord/lottery/exchangeGoldsFromSystemToSP
-
-
-        NetTask.executeRequestByPostGlods(NetTask.EXCHANGE_GOLDS, map, this);
-    }
 
     @Override
     public void onFinish(QResult resut, String reqId) {
 
-        if (reqId.equals(NetTask.GAME_DIRTY)) {
-
-            if(resut!=null){
-                GameData gameData = new Gson().fromJson(resut.getBody(),GameData.class);
-                if(gameData != null)
-                    gameDataList = gameData.getData();
-            }
-
-            L.debug("nettask", resut.getBody());
-        }else if (reqId.equals(NetTask.TELGAME_LIST)) {
-
-            if(resut!=null){
-                mPreseData(resut);
-            }
-
-            L.debug("preseData", mQuestionsDataTypeMap.toString());
-        }else if(reqId.equals(NetTask.GAME_CF)){
-
-            if(resut!=null){
-                mPreseQuestionaCFData(resut);
-            }
-
-        }else if (reqId.equals(NetTask.EXCHANGE_GOLDS)) {
-            if (resut.getResult().equals("10310")){//兑换金币成功
-                isDuiHuan = true;
-                L.debug("nettask","兑换金币成功");
-//                intent_order();//去支付
-                isPaying = false;
-                LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
-                goPay = false;
-            }else{
-                isDuiHuan = false;
-                isPaying = false;
-                Utils.showToastCenter(MainActivity.this,"兑换金币失败");
-                LemonBubble.showError(MainActivity.this, "兑换金币失败", 2000);
-            }
-        }
-        /*else if(reqId.equals(NetTask.INTENT_QUERY)){
-
-            try {
-                JSONObject object = new JSONObject(resut.getData());
-                int total = object.getInt("total");
-
-                if(total < intentNum){
-                    L.debug("nettask","商家库存不足");
-                    isPaying = false;
-                    Utils.showToastCenter(MainActivity.this,"商家库存不足！！");
-                }
-                else{
-                    L.debug("nettask","检查金币 不足去充值");
-                    checkGlods();//检查金币 不足去充值
-                }
-
-                L.debug("nettask","  total:"+total+"  intentNum:"+intentNum);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }*/
-        else if(reqId.equals(NetTask.INTENT_ORDER)){
+        if(reqId.equals(NetTask.INTENT_ORDER)){
             /**
              * //返回
              {
@@ -966,45 +819,39 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
                 playSound2();
                 L.debug("nettask","支付成功");
-                postPay();//兑换金币
+                if(confimDialog.isShowing())
+                    confimDialog.dismiss();
+                LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
+                goPay = false;
             }else if(resut.getResult().equals("10101")){
                 LemonBubble.hide();
                 Utils.showToastCenter(MainActivity.this,resut.getData());
-                isPaying = false;
             }else if(resut.getResult().equals("10102")){
                 LemonBubble.hide();
                 Utils.showToastCenter(MainActivity.this,resut.getData());
-//                userHelper.payGold(MainActivity.this);//充值页面
                 userHelper.payGoldCode (MainActivity.this,typeRMB*1000.0);
                 goPay = true;
-                isPaying = false;
             }
 
         }
 
     }
 
-    private void mPreseQuestionaCFData(QResult resut) {
-        questionsCFData = new Gson().fromJson(resut.getBody(), cfData.class);
+    private void mPreseQuestionaCFData(String json) {
+        questionsCFData = new Gson().fromJson(json, cfData.class);
         if(questionsCFData!=null)
             cfList = questionsCFData.getData();
         L.debug("nettask","cfList  "+cfList.size()+"");
     }
 
-    private void mPreseData(QResult resut) {
-        questionsData = new Gson().fromJson(resut.getBody(), QuestionsData.class);
+    private void mPreseData(String json) {
+        questionsData = new Gson().fromJson(json, LQuestionsData.class);
         L.debug("nettask","questionsData   "+questionsData.getData().size()+"");
-        /*if(questionsData!=null){
-            int size = questionsData.getData().size();
-            for (int i = 0; i < size; i++) {
-                dataBeanDao.save(questionsData.getData().get(i));
-            }
-        }*/
         preseData2View(questionsData.getData());
         loadingdialog.dismiss();
     }
 
-    private void preseData2View(List<DataBean> data) {
+    private void preseData2View(List<LQuestionsData.DataBean> data) {
         preseData(data);
 
         if(mLlGameQuestions.getVisibility() == View.VISIBLE || mLlGameDes.getVisibility() == View.VISIBLE) return;
@@ -1021,32 +868,16 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         }
     }
 
-    private void checkGlods() {
-        pay_glods = typeRMB*1000;
-        if(pay_glods>(int)Float.parseFloat(glodsCount)){
-            L.debug("nettask","金币不足-->充值页面");
-            Utils.showToastCenter(MainActivity.this,"金币不足！！");
-            goPay = true;
-        }else{
 
-            //先去支付
-            intent_order();
-
-//            postPay();//兑换金币
-            LemonBubble.showRoundProgress(MainActivity.this, "正在支付...");
-        }
-        L.debug("nettask","  pay_glods："+pay_glods+"  glodsCount:"+glodsCount);
-    }
-
-    private HashMap<Integer, QuestionsType> mQuestionsDataTypeMap = new HashMap<>();
+    private HashMap<String, QuestionsType> mQuestionsDataTypeMap = new HashMap<>();
 
 
-    private void preseData(List<DataBean> data) {
+    private void preseData(List<LQuestionsData.DataBean> data) {
         mQuestionsDataTypeMap.clear();
         QuestionsType mQuestionsType = null;
         QuestionsGroup mQuestionsGroup = null;
 
-        for (DataBean dataBean : data) {
+        for (LQuestionsData.DataBean dataBean : data) {
 
             if (mQuestionsDataTypeMap.get(dataBean.getType()) == null) {//存储题目类型的List数据为0
                 mQuestionsType = new QuestionsType();//新建一个题目类型实体
@@ -1078,8 +909,10 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
         }
 
+
+
         L.debug("nettask","mQuestionsDataTypeMap   "+mQuestionsDataTypeMap.size()+"");
-        L.debug("nettask","mQuestionsDataTypeMap----  "+mQuestionsDataTypeMap.get(2).getgroupData().get(2).getData().size()+"");
+        L.debug("nettask","mQuestionsDataTypeMap   "+mQuestionsDataTypeMap.toString()+"");
     }
 
     @Override
@@ -1088,12 +921,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             Utils.showToastCenter(MainActivity.this,"网络断开,请检查网络哦");
             loadingdialog.dismiss();
             return;
-        }
-        if (reqId.equals(NetTask.EXCHANGE_GOLDS)) {
-            isDuiHuan = false;
-            isPaying = false;
-//            Utils.showToastCenter(MainActivity.this,"兑换金币失败");
-            LemonBubble.showError(MainActivity.this, "兑换金币失败", 2000);
         }
     }
 
@@ -1112,13 +939,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             if(userInfo.getState().equals("0"))
                 finish();
 
-            glodsCount = userInfo.getCoinCount();
-            L.debug("nettask","充值金币返回  userInfo");
-            L.debug("nettask", userInfo.getCoinCount());
-            if(goPay){//充值金币返回
-                L.debug("nettask","充值金币返回-->二次检查金币");
-                checkGlods();
-            }
         }
     }
 
@@ -1127,7 +947,44 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         super.onResume();
         L.debug("nettask","充值金币返回  onResume");
         if(goPay && userInfo!=null){
-            isPaying = false;
+            showCofirmDialog();
         }
     }
+
+
+    private void showCofirmDialog() {
+
+        dialogContenView = (RelativeLayout) View.inflate(this,R.layout.ll_confirmpay, null);
+
+
+        Button buy = (Button) dialogContenView.findViewById(R.id.bt_confirm);
+        buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+               showPay();
+            }
+        });
+        Button btn_cancle = (Button) dialogContenView.findViewById(R.id.bt_cancel);
+        btn_cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confimDialog.dismiss();
+                goPay = false;
+            }
+        });
+
+
+        confimDialog.contentView = dialogContenView;
+        confimDialog.isKongBai = false;
+        confimDialog.isBackKey = false;
+        confimDialog.setTitleHight(0);
+        confimDialog.widthScale(0.6f);
+        confimDialog.heightScale(0.70f);
+//        confimDialog.cornerRadius(15);
+        confimDialog.titleLineHeight(0);
+        confimDialog.show();
+    }
+
+
 }

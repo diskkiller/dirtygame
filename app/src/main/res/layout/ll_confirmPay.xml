@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:background="@mipmap/confirmpay"
+        >
+
+        <TextView
+            android:id="@+id/item_questions_answer"
+            android:layout_width="match_parent"
+            android:layout_marginTop="300dp"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:textSize="45sp"
+            android:text="是否支付成功"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="150dp"
+            >
+            <Button
+                android:id="@+id/bt_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:background="@mipmap/confirm"
+                android:layout_marginLeft="100dp"
+                />
+
+
+            <Button
+                android:id="@+id/bt_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/cancle"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="100dp"
+                />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+
+
+</RelativeLayout>

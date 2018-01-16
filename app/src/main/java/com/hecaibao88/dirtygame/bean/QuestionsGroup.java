@@ -1,5 +1,7 @@
 package com.hecaibao88.dirtygame.bean;
 
+import com.hecaibao88.dirtygame.localBean.LQuestionsData;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,22 +51,22 @@ public class QuestionsGroup {
      * "createdAt":"2017-12-07T04:37:02.459Z","status":true}]
      */
 
-    private int groupId;
-    private List<DataBean> mQuestionsDataBeanList = new ArrayList<>();
+    private String groupId;
+    private List<LQuestionsData.DataBean> mQuestionsDataBeanList = new ArrayList<>();
 
-    public int getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(int groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public List<DataBean> getData() {
+    public List<LQuestionsData.DataBean> getData() {
         return mQuestionsDataBeanList;
     }
 
-    public void setData(List<DataBean> data) {
+    public void setData(List<LQuestionsData.DataBean> data) {
         this.mQuestionsDataBeanList = data;
     }
 

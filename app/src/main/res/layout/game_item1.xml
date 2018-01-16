@@ -12,10 +12,10 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <com.sunfusheng.glideimageview.GlideImageView
+        <ImageView
             android:id="@+id/glideImageView"
-            android:layout_width="489dp"
-            android:layout_height="763dp"
+            android:layout_width="450dp"
+            android:layout_height="730dp"
             tools:layout_editor_absoluteY="25dp"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -31,7 +31,9 @@
             app:cpv_outerSize="1dp"
             app:cpv_progressNormalColor="@color/transparent"
             app:cpv_progressReachColor="@color/transparent90_white"
-            app:cpv_progressStyle="FillInnerArc" />
+            app:cpv_progressStyle="FillInnerArc"
+            android:visibility="gone"
+            />
 
     </RelativeLayout>
 

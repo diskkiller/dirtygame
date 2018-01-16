@@ -1,25 +1,18 @@
 package com.hecaibao88.dirtygame;
 
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestOptions;
 import com.hecaibao88.dirtygame.dialog.ImProgressDialog;
-import com.sunfusheng.glideimageview.GlideImageLoader;
-import com.sunfusheng.glideimageview.GlideImageView;
 import com.sunfusheng.glideimageview.progress.CircleProgressView;
-import com.sunfusheng.glideimageview.progress.OnGlideImageViewListener;
 
 import java.util.List;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * @author WangGuoWei
@@ -55,7 +48,7 @@ import java.util.List;
  * @updateDes ${TODO}
  */
 public class GameAdapter1 extends RecyclerView.Adapter<GameAdapter1.ViewHolder> {
-    private List<GameData.DataBean> mGameList;
+    private List<GameData> mGameList;
     private OnItemClickListener mItemClickListener;
 
     public GameAdapter1(ImProgressDialog loadingdialog) {
@@ -63,12 +56,12 @@ public class GameAdapter1 extends RecyclerView.Adapter<GameAdapter1.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        GlideImageView glideImageView;
+        ImageView glideImageView;
         CircleProgressView progressView;
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            glideImageView = (GlideImageView) itemView.findViewById(R.id.glideImageView);
+            glideImageView = (ImageView) itemView.findViewById(R.id.glideImageView);
             progressView = (CircleProgressView) itemView.findViewById(R.id.progressView1);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -88,7 +81,7 @@ public class GameAdapter1 extends RecyclerView.Adapter<GameAdapter1.ViewHolder> 
 
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position, GameData.DataBean gameData);
+        void onItemClick(View view, int position, GameData gameData);
     }
 
     public GameAdapter1() {
@@ -98,7 +91,7 @@ public class GameAdapter1 extends RecyclerView.Adapter<GameAdapter1.ViewHolder> 
      * 用于把要展示的数据源传进来，并赋值给一个全局变量mFruitList，我们后续的操作都将在这个数据源的基础上进行。
      *
      */
-    public void setGameAdapterData(List<GameData.DataBean> mFruitList) {
+    public void setGameAdapterData(List<GameData> mFruitList) {
         this.mGameList = mFruitList;
         this.notifyDataSetChanged();
     }
@@ -124,16 +117,18 @@ public class GameAdapter1 extends RecyclerView.Adapter<GameAdapter1.ViewHolder> 
      */
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        GameData.DataBean game = mGameList.get(position);
-        /*Glide.with(MyAppliction.getContext())
-                .load(game.getImageUrl())
-//                .placeholder(R.drawable.progress_medium_holo)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(mRequestListener)
-                .override(489, 763)
-                .crossFade()
-                .into(holder.iv_game);*/
+        GameData game = mGameList.get(position);
 
+        Glide.with(MyAppliction.getContext())
+                .load(game.getImageUrl())
+                .transition(withCrossFade())
+                .into(holder.glideImageView);
+
+
+
+
+
+/*
         int cat_thumbnail = R.mipmap.tu11;
         if (position == 0)
             cat_thumbnail = R.mipmap.tu11;
@@ -180,33 +175,13 @@ public class GameAdapter1 extends RecyclerView.Adapter<GameAdapter1.ViewHolder> 
                     .apply(requestOptions))
 //                .error(thumbnailRequest)
                     .into(holder.glideImageView);
+        */
+
     }
 
 
 
 
-
-   /* private int picCount = 0;
-    RequestListener mRequestListener = new RequestListener() {
-
-        @Override
-        public boolean onException(Exception e, Object model, Target target, boolean
-                isFirstResource) {
-            Log.d("nettask", "onException: " + e.toString()+"  model:"+model+" isFirstResource: "+isFirstResource);
-            return false;
-        }
-
-        @Override
-        public boolean onResourceReady(Object resource, Object model, Target target, boolean
-                isFromMemoryCache, boolean isFirstResource) {
-            Log.e("nettask",  "model:"+model+" isFirstResource: "+isFirstResource);
-            picCount++;
-            if(picCount >= 3)
-                loadingdialog.dismiss();
-            return false;
-        }
-    };
-*/
 
 
 
