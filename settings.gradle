@@ -1,1 +1,1 @@
-include ':app', ':lemonbubble'
+include ':app', ':lemonbubble',':GlideImageView'

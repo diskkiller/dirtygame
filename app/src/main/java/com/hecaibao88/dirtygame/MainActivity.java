@@ -46,6 +46,7 @@ import com.hecaibao88.dirtygame.task.NetTask;
 import com.hecaibao88.dirtygame.utils.DeviceUtil;
 import com.hecaibao88.dirtygame.utils.L;
 import com.hecaibao88.dirtygame.utils.SharedPreferencesUtils;
+import com.hecaibao88.dirtygame.utils.UIUtils;
 import com.hecaibao88.dirtygame.utils.Utils;
 import com.hecaibao88.dirtygame.utils.dodo.FileUtil;
 import com.hecaibao88.dirtygame.utils.dodo.NetStatus;
@@ -233,6 +234,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
 
         confimDialog = new NormalDialog(this);
         loadingdialog = new ImProgressDialog.Builder(this).create();
+        loadingdialog.show();
         userHelper = UserHelper.initialize(this, this);
         userHelper.getUserInfo(this);
         fileUtil = new FileUtil();
@@ -262,7 +264,7 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        //        recyclerView.addItemDecoration(new SpaceItemDecoration(50));
+        recyclerView.addItemDecoration(new SpaceItemDecoration(20));
         adapter = new GameAdapter1(loadingdialog);
         recyclerView.setAdapter(adapter);
         adapter.SetOnItemClickListener(new GameAdapter1.OnItemClickListener() {
@@ -411,9 +413,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             }
         });
 
-
-        showCofirmDialog();
-
     }
 
     private void initData() {
@@ -494,6 +493,10 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         super.onDestroy();
         if (mMusic != null)
             mMusic.dispose();
+
+        if(mReceiver!=null)
+            unregisterReceiver(mReceiver);
+
         userHelper.destroy(MainActivity.this);
         L.debug("nettask","onDestroy===============");
     }
@@ -623,6 +626,16 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
             LemonBubble.showRoundProgress(MainActivity.this, "正在支付...");
             //支付
             intent_order();
+
+        UIUtils.getMainThreadHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                LemonBubble.hide();
+                Utils.showToastCenter(MainActivity.this,"支付失败");
+            }
+        },5000);
+
+
     }
 
 
@@ -718,7 +731,10 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         if (type == 0) {
             mLlPunishment.setVisibility(View.VISIBLE);//惩罚
 
-            mPunishmentId = (int) mPunishmentIdList.get(questionsId);
+            int temp_questionsId = 0;
+            if(questionsId>0)
+                temp_questionsId = questionsId-1;
+            mPunishmentId = (int) mPunishmentIdList.get(temp_questionsId);
 
 
 
@@ -767,14 +783,20 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
     }
     public void loadGameData() {
         //int typeRMB, int typeId, int intentNum, int price, int imageId
-        GameData gamdataType1 = new GameData(30,1,5,30,R.mipmap.type_388);
-        GameData gamdataType2 = new GameData(30,2,10,30,R.mipmap.type_588);
-        GameData gamdataType3 = new GameData(30,3,15,30,R.mipmap.type_888);
-        GameData gamdataType4 = new GameData(30,4,20,30,R.mipmap.type_1188);
+
+        if(gameDataList!=null)
+            gameDataList.clear();
+
+        GameData gamdataType1 = new GameData(1,1,5,30,R.mipmap.type_388);
+        GameData gamdataType2 = new GameData(2,2,10,30,R.mipmap.type_588);
+        GameData gamdataType3 = new GameData(3,3,15,30,R.mipmap.type_888);
+        GameData gamdataType4 = new GameData(4,4,20,30,R.mipmap.type_1188);
         gameDataList.add(gamdataType1);
         gameDataList.add(gamdataType2);
         gameDataList.add(gamdataType3);
         gameDataList.add(gamdataType4);
+
+        loadingdialog.dismiss();
     }
 
 
@@ -816,28 +838,23 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
              }
              */
             if (resut.getResult().equals("10000")){
-
+                UIUtils.getMainThreadHandler().removeCallbacksAndMessages(null);
                 playSound2();
                 L.debug("nettask","支付成功");
                 if(confimDialog.isShowing())
                     confimDialog.dismiss();
                 LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
                 goPay = false;
+                isDuiHuan = true;
             }else if(resut.getResult().equals("10101")){
                 LemonBubble.hide();
                 Utils.showToastCenter(MainActivity.this,resut.getData());
             }else if(resut.getResult().equals("10102")){
                 LemonBubble.hide();
+                UIUtils.getMainThreadHandler().removeCallbacksAndMessages(null);
                 Utils.showToastCenter(MainActivity.this,resut.getData());
                 userHelper.payGoldCode (MainActivity.this,typeRMB*1000.0);
                 goPay = true;
-            }else if(resut.getResult().equals("10105")){
-                playSound2();
-                L.debug("nettask","支付成功");
-                if(confimDialog.isShowing())
-                    confimDialog.dismiss();
-                LemonBubble.showRight(MainActivity.this, "支付成功", 2000);
-                goPay = false;
             }
 
         }
@@ -848,6 +865,23 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         questionsCFData = new Gson().fromJson(json, cfData.class);
         if(questionsCFData!=null)
             cfList = questionsCFData.getData();
+
+
+        if(mPunishmenSet == null)
+            mPunishmenSet = new HashSet();
+        else{
+            mPunishmenSet.clear();
+        }
+
+        Utils.randomSet(0,cfList.size()-1,10,mPunishmenSet);
+
+        Iterator it = mPunishmenSet.iterator();
+        while(it.hasNext()){
+            mPunishmentIdList.add((int) it.next());
+        }
+
+
+
         L.debug("nettask","cfList  "+cfList.size()+"");
     }
 
@@ -855,7 +889,6 @@ public class MainActivity extends FragmentActivity implements QHttpClient.Reques
         questionsData = new Gson().fromJson(json, LQuestionsData.class);
         L.debug("nettask","questionsData   "+questionsData.getData().size()+"");
         preseData2View(questionsData.getData());
-        loadingdialog.dismiss();
     }
 
     private void preseData2View(List<LQuestionsData.DataBean> data) {
